@@ -1,6 +1,6 @@
 ---
-title: Setting up a dev environment
-description: Instructions on how to start developing for Mastodon.
+title: 開発環境のセットアップ
+description: Mastodonの開発環境を整える方法。
 menu:
   docs:
     weight: 20
@@ -8,32 +8,32 @@ menu:
 ---
 
 {{< hint style="danger" >}}
-This page is under construction.
+未完成です。
 {{< /hint >}}
 
-### Setup {#setup}
+### セットアップ {#setup}
 
-Run following commands in the project directory `bundle install`, `yarn install`.
+プロジェクトディレクトリ(`live`等)で`bundle install`と`yarn install`を実行します。
 
-In the development environment, Mastodon will use PostgreSQL as the currently signed-in Linux user using the `ident` method, which usually works out of the box. The one command you need to run is `rails db:setup` which will create the databases `mastodon_development` and `mastodon_test`, load the schema into them, and then create seed data defined in `db/seed.rb` in `mastodon_development`. The only seed data is an admin account with the credentials `admin@localhost:3000` / `mastodonadmin`.
+開発環境では、MastodonはPostgreSQLをその時点で利用しているLinuxユーザーに`ident`メソッドでサインインして利用します。これは通常、そのまま使用できます。`rails db:setup`を実行すれば`mastodon_development`と`mastodon_test`データベースが作成されスキーマがロードされて、`mastodon_development`内の`db/seed.rb`にシード値が作成されます。唯一のシード値は`admin@localhost:3000` / `mastodonadmin`クレデンシャルによるAdminアカウントです。
 
-> Please keep in mind, by default Mastodon will run on port 3000. If you configure a different port for it, the generated admin account will use that number.
+> **注意** Mastodonはデフォルトで3000ポートを使用します。もし設定を変更して他のポートを使用しているならば、そのポート番号がAdminアカウントにも適用されます。
 
-### Running {#running}
+### 実行 {#running}
 
-There are multiple processes that need to be run for the full set of Mastodon’s functionality, although they can be selectively omitted. To run all of them with just one command, you can install Foreman with `gem install foreman --no-document` and then use:
+Mastodonのプロセスは複数あり、それは各々個別にkillすることもできますが、全て実行されていないとフルセットで実行されません。1コマンドで全て実行したい場合、Foremanを`gem install foreman --no-document`でインストールして、
 
 ```text
 foreman start
 ```
 
-In the Mastodon directory. This will start processes defined in `Procfile.dev`, which will give you: A Rails server, a Webpack server, a streaming API server, and Sidekiq. Of course, you can run any of those things stand-alone depending on your needs.
+をMastodonディレクトリ内で実行してください。`Procfile.dev`内で定義されたプロセスが実行されます。RailsサーバーとWebpackサーバー、ストリーミングAPIサーバー、そしてSidekiqサーバーが起動します。もちろん、必要に応じて、これらのものをスタンドアロンで実行できます。
 
-### Testing {#testing}
+### テスト {#testing}
 
-| Command | Description |
+| コマンド | 説明 |
 | :--- | :--- |
-| `rspec` | Run the Ruby test suite |
-| `yarn run test` | Run the JavaScript test suite |
-| `rubocop` | Check the Ruby code for conformance with our code style |
+| `rspec` | Rubyのテストスイートを実行 |
+| `yarn run test` | JavaScriptのテストスイートを実行 |
+| `rubocop` | Rubyコードがコードスタイルに準拠しているかどうかを確認 |
 

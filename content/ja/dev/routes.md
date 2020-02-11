@@ -1,6 +1,6 @@
 ---
-title: Routes
-description: How HTTP methods map to controllers and actions.
+title: ルーティング
+description: いかにしてHTTPメソッドがコントローラやアクションにマップされるのか。
 menu:
   docs:
     weight: 40
@@ -9,13 +9,13 @@ menu:
 
 {{< caption-link url="https://github.com/tootsuite/mastodon/blob/master/config/routes.rb" caption="config/routes.rb" >}}
 
-## Explanation of routes {#routes}
+## ルートの説明 {#routes}
 
-Mastodon uses Ruby on Rails, which defines its router configuration at config/routes.rb. You may view the [Ruby on Rails routing guide](https://guides.rubyonrails.org/routing.html) for more detailed information, but this page will explain the basics of how Mastodon handles routing.
+MastodonはRuby on Railsを使用し、ルーターは`config/routes.rb`で規定されます。[Ruby on Rails routing guide](https://guides.rubyonrails.org/routing.html)に細かい説明がありますが、このページではMastodonがいかにしてルーティングするかを簡単に説明します。
 
-### How routes are constructed {#router}
+### ルーティング手順 {#router}
 
-`namespace` is a prefix for routes mapped to a certain controller directory. `resources` are mapped to controllers within that namespace directory. `scope` passes to the `module`'s controller. For example, consider the following abbreviated code:
+`namespace`はあるコントローラのディレクトリにマップされるためのプレフィクスです。`resources`はその名前空間のディレクトリ内のコントローラにマップされます。`scope`は`module`のコントローラに渡します。例えば、次の短縮されたコードについて考えてみましょう。
 
 {{< code title="config/routes.rb excerpt" >}}
 ```ruby
@@ -35,39 +35,39 @@ end
 ```
 {{< /code >}}
 
-The first available resource is :statuses, which is nested under the :api and :v1 namespaces. Thus, the resulting HTTP route will be /api/v1/statuses. The `only` defines certain allowed methods, which are to be defined in the controller at `app/controllers/api/v1/statuses_controller.rb`.
+最初に利用可能なリソースは`:statuses`です。これは、`:api`と`v1`という名前空間下にネストされます。結果として/api/v1/statusesにルーティングされます。`only`は特定の許可されたメソッドを定義します。これは`app/controllers/api/v1/statuses_controller.rb`のコントローラで定義されています。
 
-Within /api/v1/statuses, there is a scope for a module :statuses, where additional resources are defined. The controllers for these resources live in `app/controllers/api/v1/statuses/`. For example, :favourite will be handled by the \#create action within `app/controllers/api/v1/statuses/favourites_controller.rb` and :unfavourite will be handled within the same controller, but by the \#destroy action.
+/api/v1/statuses内には、追加のリソースが定義された`:statuses`モジュールへのスコープがあります。そのリソースへのコントローラは`app/controllers/api/v1/statuses/`にあります。例えば`:favourite`は`app/controllers/api/v1/statuses/favourites_controller.rb`内の`#create`アクションによってハンドルされ、`:unfavourite`は同一のコントローラの`#destroy`アクションでハンドルされます。
 
-There is also a custom method defined for any `member` within this scope, or in other words, for any status to be controlled by `app/controllers/api/v1/statuses_controller.rb`, which is mapped to GET /api/v1/statuses/:id/context and handled by the :context action defined within that controller.
+このスコープ内にはあらゆる`member`へのカスタムメソッドが定義されています。つまり、全てのstatusは`app/controllers/api/v1/statuses_controller.rb`でコントロールされ、`GET /api/v1/statuses/:id/context`にマップされます。
 
-### Available methods {#methods}
+### 利用可能なメソッド {#methods}
 
 #### :index
 
-Maps to HTTP GET, for a list. Handled by the \#index action in a controller.
+HTTP GETへのマップで、リストに使用します。コントローラ内の`#index`アクションによってハンドルされます。
 
 #### :show
 
-Maps to HTTP GET, for a single view. Handled by the \#show action in a controller.
+HTTP GETへのマップで、単一のビューに使用します。コントローラ内の`#show`アクションによってハンドルされます。
 
 #### :create
 
-Maps to HTTP POST. Handled by the \#create action in a controller.
+HTTP POSTへのマップです。コントローラ内の`#create`アクションによってハンドルされます。
 
 #### :update
 
-Maps to HTTP PUT. Handled by the \#update action in a controller.
+HTTP PUTへのマップです。コントローラ内の`#update`アクションによってハンドルされます。
 
 #### :destroy
 
-Maps to HTTP DELETE. Handled by the \#destroy action in a controller.
+HTTP DELETEへのマップです。コントローラ内の`#destroy`アクションによってハンドルされます。
 
 ## .well-known {#well-known}
 
 ### /.well-known/host-meta {#host-meta}
 
-Extensible Resource Descriptor \(XRD\). Advertises existence of Webfinger.
+Extensible Resource Descriptor \(XRD\)です。Webfingerの存在を公表します。
 
 ### /.well-known/nodeinfo {#nodeinfo}
 
