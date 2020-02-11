@@ -1,6 +1,6 @@
 ---
-title: Libraries and implementations
-description: Interface with the Mastodon API in the programming language of your choice.
+title: ライブラリ等
+description: Mastodon APIにアクセスするための各言語のライブラリなど
 menu:
   docs:
     weight: 60

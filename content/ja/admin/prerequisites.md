@@ -1,30 +1,40 @@
 ---
-title: Preparing your machine
+title: マシンの準備
 menu:
   docs:
     weight: 10
     parent: admin
 ---
 
-If you are setting up a fresh machine, it is recommended that you secure it first. Assuming that you are running **Ubuntu 18.04**:
+もし完全に新しい環境(OS)でセットアップする場合、まずセキュリティを強化するべきです。**Ubuntu 18.04**での例を紹介します。
 
-## Do not allow password-based SSH login \(keys only\)
+## SSHにパスワードでログインできないようにします (keyを使用)
 
-First make sure you are actually logging in to the server using keys and not via a password, otherwise this will lock you out. Many hosting providers support uploading a public key and automatically set up key-based root login on new machines for you.
+まずサーバーにパスワードではなくkeyでログインするようにします。これは締め出される可能性を低くするためのものです。多くのホスティングサービスは公開鍵(public key)をアップロードしたり、新規マシンを作成時に最初からkeyを使ったログインに対応しています。
 
-Edit `/etc/ssh/sshd_config` and find `PasswordAuthentication`. Make sure it’s uncommented and set to `no`. If you made any changes, restart sshd:
+ `/etc/ssh/sshd_config`の`PasswordAuthentication`を編集します。コメントアウトを解除して`no`になるように設定します。そしてsshdを再起動します。
 
-## Update system packages
+```sh
+systemctl restart ssh
+```
 
-```bash
+### パッケージを更新
+
+```sh
 apt update && apt upgrade -y
 ```
 
-## Install fail2ban so it blocks repeated login attempts
+### 繰り返しのログイン試行を防ぐ
 
-Edit `/etc/fail2ban/jail.local` and put this inside:
+`fail2ban`を使用
 
-```text
+```sh
+apt install fail2ban
+```
+
+`/etc/fail2ban/jail.local`の内部に
+
+```ini
 [DEFAULT]
 destemail = your@email.here
 sendername = Fail2Ban
@@ -38,23 +48,23 @@ enabled = true
 port = 22
 ```
 
-Finally restart fail2ban:
+と書いてfail2banを再起動します。
 
-```bash
+```sh
 systemctl restart fail2ban
 ```
 
-## Install a firewall and only whitelist SSH, HTTP and HTTPS ports
+### SSHとHTTP, HTTPSだけポート開放するようファイアウォールを設定
 
-First, install iptables-persistent. During installation it will ask you if you want to keep current rules–decline.
+まずiptables-persistentを入れます。インストール中に現在の設定を保持するか聞かれます。
 
-```bash
+```sh
 apt install -y iptables-persistent
 ```
 
-Edit `/etc/iptables/rules.v4` and put this inside:
+`/etc/iptables/rules.v4`の内部に
 
-```text
+```
 *filter
 
 #  Allow all loopback (lo0) traffic and drop all traffic to 127/8 that doesn't use lo0
@@ -88,9 +98,9 @@ Edit `/etc/iptables/rules.v4` and put this inside:
 COMMIT
 ```
 
-With iptables-persistent, that configuration will be loaded at boot time. But since we are not rebooting right now, we need to load it manually for the first time:
+と書きます。
+iptables-persistentを使用すると、その構成は起動時に読み込まれます。ただし、最初は手動で読み込む必要があります。
 
-```bash
+```sh
 iptables-restore < /etc/iptables/rules.v4
 ```
-

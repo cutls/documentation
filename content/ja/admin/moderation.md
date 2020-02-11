@@ -1,64 +1,69 @@
 ---
-title: Moderation actions
-description: Actions that can be taken against unwanted users or domains.
+title: モデレーション
+description: 望まないユーザーやドメインに対するアクション。
 menu:
   docs:
     weight: 110
     parent: admin
 ---
 
-## Individual moderation {#individual-moderation}
+## はじめに {#individual-moderation}
 
-Moderation in Mastodon is always applied locally, i.e. as seen from the particular server. An admin or moderator on one server cannot affect a user on another server, they can only affect the local copy on their own server.
+Mastodonのモデレーションは常にそのサーバー内にのみ適用されます。つまり、自分のいるサーバーでどう見えるかを制御できます。あるサーバーの管理者またはモデレーターは、別のサーバーのユーザーに影響を与えることはできません。自分のサーバーにあるアカウントやトゥート情報のコピーにのみ影響を与えることができます。
 
-### Disable login {#disable-login}
+### ログイン無効化 {#disable-login}
 
-A Mastodon account can be disabled. This prevents the user from doing anything with the account, but all of the content is still there untouched. This limitation is reversible, the account can be re-enabled at any time. This limitation is only available for local users on your server.
+Mastodonアカウントを使用不能にします。そのアカウントでいかなる動作をすることも禁止されますが、そのアカウントのコンテンツには何ら影響を与えません。この制限は可逆的でいつでも解除できます。また、自分のサーバー以外のユーザーにこの処置をすることはできません。
 
-### Silence {#silence-user}
+### サイレンス {#silence-user}
 
-A Mastodon silence is synonymous with sandbox. A silenced account does not appear to users who are not already following it. All of the content is still there, and it can still be found via search, mentioned, and followed, but the content is invisible.
+Mastodonのサイレンスはサンドボックスと同義です。サイレンスされたアカウントはそのユーザーを知らない(未フォローの)ユーザーからは見ることができません。また、検索やメンション、フォロー関係は残されますが、コンテンツは見えなくなります。見えなくなりますが削除はされません。
 
-At this moment, silence does not affect federation. A locally silenced account is _not_ silenced automatically on other servers.
+現時点では、サイレンスは連合に影響しません。自分のサーバーでサイレンスしても、他のサーバーではサイレンスされません。
 
-This limitation is reversible, the account can be unsilenced at any time.
+この制限は可逆的でいつでも解除できます。
 
-### Suspend {#suspend-user}
+### サスペンド {#suspend-user}
 
-A Mastodon suspension is synonymous with deletion. The account no longer appears in search, the profile page is gone, all of the posts, uploads, followers, and all other data is removed. This limitation is **irreversible**. While the account can be unsuspended, allowing the user to take control of it again, the old data is gone for good.
+Mastodonのサスペンドは削除と同義です。アカウントは検索にも表示されず、プロフィールや投稿、画像、フォロワー等全てのデータは削除されます。この処置は非可逆的で、**元には戻せません**。アカウントのサスペンドは解除可能で、ユーザーは再び使用できるようにできますが、古いデータは永久に失われます。
 
-## Server-wide moderation {#server-wide-moderation}
+## サーバー単位のモデレーション {#server-wide-moderation}
 
-Because individually moderating a large volume of users from a misbehaving server can be exhausting, it is possible to pre-emptively moderate against all users from that particular server using a so-called **domain block**, which comes with several different levels of severity.
+不正な動作をしていると思われるサーバーから大量のユーザーを個別にモデレートするのは大変です。特定のサーバーからのすべてのユーザーに対して、いわゆる**ドメインブロック**を使用して先制的にモデレートすることができます。
 
-### Reject media {#reject-media}
+### メディア拒否 {#reject-media}
 
-With this option active, no files from the server will be processed locally. That includes avatars, headers, emojis and media attachments.
+このオプションがオンであれば、サーバーはこのサーバーからのメディアを処理しません。添付データやアバター、ヘッダー、カスタム絵文字が含まれます。
 
-### Silence {#silence-server}
+### サイレンス {#silence-server}
 
-Applies a silence to all past and future accounts from the server.
+そのサーバーの全ての投稿を見えなくします。
 
-### Suspend {#suspend-server}
+### サスペンド {#suspend-server}
 
-Applies a suspension to all past and future accounts from the server. No content from the server will be stored locally except for usernames.
+そのサーバーの全ての投稿を削除します。ユーザーネーム以外の全ての情報は処理・保存しなくなります。
 
-## Spam-fighting measures {#spam-fighting-measures}
+## スパム対策 {#spam-fighting-measures}
 
 There are a few baseline measures for preventing spam in Mastodon:
 
 * Signing up requires confirming an e-mail address
 * Signing up is rate-limited by IP
 
-However, dedicated spammers will get through that. The other measure you can employ is **e-mail domain blacklisting**. During sign up, Mastodon resolves the given e-mail address for an A or MX record, i.e. the IP address of the e-mail server, and checks that IP address against a dynamically stored blacklist.
+Mastodonからスパムを防ぐための対策です。
 
-### Blocking by e-mail server {#blocking-by-e-mail-server}
+- 新規登録時にはメールアドレスの確認が必要です。
+- 新規登録はIPアドレス単位でレートリミットが設定されています。
 
-Spammers will often use different e-mail domains so it looks like they are using a lot of different e-mail servers that would all be difficult to blacklist separately. However, sometimes all of those domains resolve to a single e-mail server IP. If you see a lot of spammers signing up at the same time, you can check for this, either using an online DNS lookup tool, or the Linux `dig` utility, e.g. `dig 1.2.3.4` will return all DNS records for that IP. If you notice the IP is the same for all domains, you can add it to the e-mail domain blacklist.
+それでもMastodonに特化したスパマーはこれらを突破します。対策として採用できるもう1つの手段は、**メールドメインのブラックリスト登録**です。サインアップ時に、MastodonはAまたはMXレコードの指定された電子メールアドレス、つまり電子メールサーバーのIPアドレスを解決し、動的に保存されたブラックリストにそのIPアドレスがあるかをチェックします。
 
-### Blocking by IP {#blocking-by-ip}
+### メールサーバー単位のブロック {#blocking-by-e-mail-server}
 
-It is not possible to block visitors by IP address in Mastodon itself, and it is not a fool-proof strategy. IPs are sometimes shared by a lot of different people, and sometimes change hands. But it is possible to block visitors by IP address in Linux using a firewall. Here is an example using `iptables` and `ipset`:
+スパマーは多くの場合異なるメールドメインを使用するため、多くの異なるメールサーバーを使用しているように見えます。それらをすべて個別にブラックリストに登録することは困難ですが、使用するドメインのすべてが単一のメールサーバーIPに解決される場合があります。多数のスパマーが同時にサインアップしている場合は、オンラインDNSルックアップツールまたはLinux `dig`ユーティリティを使用してこれを確認できます。たとえば`dig 1.2.3.4`ではそのIPのすべてのDNSレコードが返されます。IPがすべてのドメインで同じであることに気付いた場合、メールドメインブラックリストに追加できます。
+
+### IPアドレスのブロック {#blocking-by-ip}
+
+Mastodon自体のIPアドレスで訪問者をブロックすることは不可能であり、それが確実な戦略でもありません。IPは、多くの異なる人々によって共有されることもあれば、変わることもあります。しかし、Linuxのファイアウォールを使用してIPアドレスで訪問者をブロックすることは可能です。以下に`iptables`と`ipset`を使用した例を示します。
 
 ```bash
 # Install ipset
@@ -71,5 +76,4 @@ sudo ipset add spambots 1.2.3.4
 sudo iptables -I INPUT 1 -m set --match-set spambots src -j DROP
 ```
 
-Be careful not to lock yourself out of your machine.
-
+自分のIPアドレスを指定するなどしてSSH締め出しを食らわないように注意してください。

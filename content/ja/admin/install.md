@@ -1,23 +1,31 @@
 ---
-title: Installing from source
-description: Instructional guide on creating your own Mastodon-powered website.
+title: ソースからインストール
+description: Mastodonを立ち上げるためのガイド。
 menu:
   docs:
     weight: 20
     parent: admin
 ---
 
-## Pre-requisites {#pre-requisites}
+## 前提 {#pre-requisites}
 
-* A machine running **Ubuntu 18.04** that you have root access to
-* A **domain name** \(or a subdomain\) for the Mastodon server, e.g. `example.com`
-* An e-mail delivery service or other **SMTP server**
+- rootアクセスのある**Ubuntu 18.04**マシン
+- Mastodonサーバーに使う**ドメイン**(サブドメインも可): `example.com`など
+- メール配送サービスや**SMTPサーバー**
 
-You will be running the commands as root. If you aren’t already root, switch to root:
+rootでコマンドを実行します。rootでないなら、以下を実行します。
 
-### System repositories {#system-repositories}
+```sh
+sudo -i
+```
 
-Make sure curl is installed first:
+### システムリポジトリ {#system-repositories}
+
+curlをインストール
+
+```sh
+apt install -y curl
+```
 
 #### Node.js {#node-js}
 
@@ -32,7 +40,7 @@ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 ```
 
-### System packages {#system-packages}
+### システムパッケージ {#system-packages}
 
 ```bash
 apt update
@@ -45,15 +53,15 @@ apt install -y \
   certbot python-certbot-nginx yarn libidn11-dev libicu-dev libjemalloc-dev
 ```
 
-### Installing Ruby {#installing-ruby}
+### Rubyのインストール {#installing-ruby}
 
-We will be using rbenv to manage Ruby versions, because it’s easier to get the right versions and to update once a newer release comes out. rbenv must be installed for a single Linux user, therefore, first we must create the user Mastodon will be running as:
+rbenvを使用してRubyのバージョンを管理します。これは、適切なバージョンを使用でき、新しいリリースがリリースされたらすぐに更新できるためです。rbenvは単一のLinuxユーザー用にインストールする必要があるため、最初にMastodonを実行するユーザーを作成する必要があります。
 
 ```bash
 adduser --disabled-login mastodon
 ```
 
-We can then switch to the user:
+ユーザーを変更します
 
 ```bash
 su - mastodon
@@ -70,78 +78,79 @@ exec bash
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 ```
 
-Once this is done, we can install the correct Ruby version:
+O
+インストール後に特定のRubyをインストールするには
 
-```bash
+```sh
 RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 2.6.5
 rbenv global 2.6.5
 ```
 
-Default gem version shipped with ruby\_2.6.0 is incompatible with latest bundler, so we need to update gem:
+規定のgemバージョンはruby_2.6.0となっていて最新のbundlerには対応していません。よってgemをアップデートします。
 
-```bash
+```
 gem update --system
 ```
 
-We’ll also need to install bundler:
+bundlerをインストール
 
-```bash
+```sh
 gem install bundler --no-document
 ```
 
-Return to the root user:
+rootに戻る
 
-```bash
+```sh
 exit
 ```
 
-## Setup {#setup}
+## セットアップ {#setup}
 
-### Setting up PostgreSQL {#setting-up-postgresql}
+### PostgreSQLをセットアップ {#setting-up-postgresql}
 
-#### Performance configuration \(optional\) {#performance-configuration-optional}
+#### パフォーマンスチューニング \(任意\) {#performance-configuration-optional}
 
-For optimal performance, you may use [pgTune](https://pgtune.leopard.in.ua/#/) to generate an appropriate configuration and edit values in `/etc/postgresql/9.6/main/postgresql.conf` before restarting PostgreSQL with `systemctl restart postgresql`
+最適なパフォーマンスを得るために、[pgTune](https://pgtune.leopard.in.ua/#/)で設定ファイルを生成し、 `/etc/postgresql/9.6/main/postgresql.conf`を`systemctl restart postgresql`で再起動する前に編集します。
 
-#### Creating a user {#creating-a-user}
+#### ユーザー作成 {#creating-a-user}
 
-You will need to create a PostgreSQL user that Mastodon could use. It is easiest to go with “ident” authentication in a simple setup, i.e. the PostgreSQL user does not have a separate password and can be used by the Linux user with the same username.
+Mastodonが使用できるPostgreSQLユーザーを作成する必要があります。単純な設定で「ident」認証を使用するのが最も簡単です。つまり、PostgreSQLユーザーは個別のパスワードを持たず、同じユーザー名のLinuxユーザーが使用できます。
 
-Open the prompt:
+プロンプトを開きます
 
-```bash
+```sh
 sudo -u postgres psql
 ```
 
 In the prompt, execute:
 
-```sql
+```
 CREATE USER mastodon CREATEDB;
 \q
 ```
 
-Done!
+完了です！
 
-### Setting up Mastodon {#setting-up-mastodon}
+### Mastodonのセットアップ {#setting-up-mastodon}
 
-It is time to download the Mastodon code. Switch to the mastodon user:
+mastodonユーザーに切り替えましょう。ついにMastodonの本体をインストールです。
 
-```bash
+```sh
 su - mastodon
 ```
 
-#### Checking out the code {#checking-out-the-code}
+#### チェックアウト {#checking-out-the-code}
 
-Use git to download the latest stable release of Mastodon:
+最終安定版に切り替えます。
 
-```bash
+```sh
 git clone https://github.com/tootsuite/mastodon.git live && cd live
 git checkout $(git tag -l | grep -v 'rc[0-9]*$' | sort -V | tail -n 1)
 ```
 
-#### Installing the last dependencies {#installing-the-last-dependencies}
+#### 最新の依存関係のインストール {#installing-the-last-dependencies}
 
-Now to install Ruby and JavaScript dependencies:
+RubyとNode.jsの依存関係をインストールします。
 
 ```bash
 bundle install \
@@ -150,78 +159,81 @@ bundle install \
 yarn install --pure-lockfile
 ```
 
-#### Generating a configuration {#generating-a-configuration}
+#### 設定ファイルを作成 {#generating-a-configuration}
 
-Run the interactive setup wizard:
+インタラクティブな設定ウィザードを使用できます。
 
-```bash
+```sh
 RAILS_ENV=production bundle exec rake mastodon:setup
 ```
 
-This will:
+できること
 
-* Create a configuration file
-* Run asset precompilation
-* Create the database schema
+- 設定ファイルの作成
+- アセットのプリコンパイル
+- データベースのスキーマの作成
 
-The configuration file is saved as `.env.production`. You can review and edit it to your liking. Refer to the [documentation on configuration.]({{< relref "config.md" >}})
+設定ファイルは`.env.production`に保存されます。好きなように編集してください。[documentation on configuration]({{< relref "config.md" >}})も参照。
 
-You’re done with the mastodon user for now, so switch back to root:
+rootに戻ります。
 
-```bash
+```sh
 exit
 ```
 
-### Setting up nginx {#setting-up-nginx}
+### Nginxの設定 {#setting-up-nginx}
 
-Copy the configuration template for nginx from the Mastodon directory:
+MastodonのディレクトリからNginxの設定ファイル例をコピーします。
 
-```bash
+```sh
 cp /home/mastodon/live/dist/nginx.conf /etc/nginx/sites-available/mastodon
 ln -s /etc/nginx/sites-available/mastodon /etc/nginx/sites-enabled/mastodon
 ```
 
-Then edit `/etc/nginx/sites-available/mastodon` to replace `example.com` with your own domain name, and make any other adjustments you might need.
+そして、`/etc/nginx/sites-available/mastodon`を開いて`example.com`を自分のドメイン名に変更するなど、任意の設定をしてください。
 
-Reload nginx for the changes to take effect:
+Nginxの設定を再読込します。
 
-### Acquiring a SSL certificate {#acquiring-a-ssl-certificate}
+```sh
+systemctl reload nginx
+```
 
-We’ll use Let’s Encrypt to get a free SSL certificate:
+### SSL証明書の取得{#acquiring-a-ssl-certificate}
+
+無料のLet's Encrypt証明書を使用します。
 
 ```bash
 certbot --nginx -d example.com
 ```
 
-This will obtain the certificate, automatically update `/etc/nginx/sites-available/mastodon` to use the new certificate, and reload nginx for the changes to take effect.
+これにより、証明書が取得されます。そして、`/etc/nginx/sites-available/mastodon`は新しい証明書を使用するように自動的に更新され、nginxがリロードされて変更が有効になります。
 
-At this point you should be able to visit your domain in the browser and see the elephant hitting the computer screen error page. This is because we haven’t started the Mastodon process yet.
+この時点で、ブラウザーでドメインにアクセスし、象がコンピューター画面のエラーページにヒットするのを確認できるはずです。これは、マストドンのプロセスをまだ開始していないためです。
 
-### Setting up systemd services {#setting-up-systemd-services}
+### systemdサービスを作成 {#setting-up-systemd-services}
 
-Copy the systemd service templates from the Mastodon directory:
+systemdサービステンプレートをMastodonディレクトリからコピーします。
 
-```bash
+```sh
 cp /home/mastodon/live/dist/mastodon-*.service /etc/systemd/system/
 ```
 
-Then edit the files to make sure the username and paths are correct:
+次に、ファイルを編集して、ユーザー名とパスが正しいことを確認します。
 
-* `/etc/systemd/system/mastodon-web.service`
-* `/etc/systemd/system/mastodon-sidekiq.service`
-* `/etc/systemd/system/mastodon-streaming.service`
+- `/etc/systemd/system/mastodon-web.service`
+- `/etc/systemd/system/mastodon-sidekiq.service`
+- `/etc/systemd/system/mastodon-streaming.service`
 
-Finally, start and enable the new systemd services:
+最後に、新しいsystemdサービスを開始して有効にします。
 
-```bash
-systemctl daemon-reload
+```sh
 systemctl start mastodon-web mastodon-sidekiq mastodon-streaming
 systemctl enable mastodon-*
 ```
 
-They will now automatically start at boot time.
+マシンの起動時にも自動で起動します。
 
 {{< hint style="success" >}}
-**Hurray! This is it. You can visit your domain in the browser now!**
+**お疲れ様です！ブラウザであなたのMastodonにアクセスできるはずです！**
 {{< /hint >}}
 

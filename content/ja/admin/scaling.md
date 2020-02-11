@@ -1,128 +1,125 @@
 ---
-title: Scaling up your server
-descriptions: Optimizations that can be done to serve more users.
+title: サーバーのスケールアップ
+descriptions: ユーザー数の増加に伴う負荷の軽減。
 menu:
   docs:
     weight: 100
     parent: admin
 ---
+## 並行処理能力の向上 {#concurrency}
 
-## Managing concurrency {#concurrency}
+Mastodonのプロセスには3つの種類があります。
 
-Mastodon has three types of processes:
+- Web (Puma)
+- Streaming API
+- バックグラウンド (Sidekiq)
 
-* Web \(Puma\)
-* Streaming API
-* Background processing \(Sidekiq\)
+環境変数は`.env.production`で編集します。[環境設定(.env.production)]({{< relref "config.md" >}})を参照してください。
 
-### Web \(Puma\) {#web}
+### Web (Puma) {#web}
 
-The web process serves short-lived HTTP requests for most of the application. The following environment variables control it:
+Webプロセスはほとんどのアプリケーションに使われる個々のHTTPリクエストを処理します。以下の環境変数の数値を調節してください。
 
-* `WEB_CONCURRENCY` controls the number of worker processes
-* `MAX_THREADS` controls the number of threads per process
+- `WEB_CONCURRENCY`でワーカープロセスの数を設定できます。
+- `MAX_THREADS`でプロセスあたりのスレッド数を指定できます。
 
-Threads share the memory of their parent process. Different processes allocate their own memory, though they share some memory via copy-on-write. A larger number of threads maxes out your CPU first, a larger number of processes maxes out your RAM first.
+スレッドは親プロセスとメモリーを共有します。異なるプロセスには別のメモリーを割り当てますが、コピーオンライトを介していくつかのメモリを共有します。  
+スレッドの数が多いとCPU資源が不足し、プロセスの数が多いとRAMが不足する可能性があります。
 
-These values affect how many HTTP requests can be served at the same time.
+これらの値は同時にいくつのHTTPリクエストを捌けるかに関わります。
 
-In terms of throughput, more processes are better than more threads.
+スループットの観点では、スレッドよりもプロセスの方が優れています。
 
 ### Streaming API {#streaming}
 
-The streaming API handles long-lived HTTP and WebSockets connections, through which clients receive real-time updates. The following environment variables control it:
+持続的なHTTPとWebSocketコネクションを処理します。クライアントはリアルタイムにアップデートを受信できます。
+以下の環境変数の数値を調節してください。
 
-* `STREAMING_CLUSTER_NUM` controls the number of worker processes
-* `STREAMING_API_BASE_URL` controls the base URL of the streaming API
+- `STREAMING_CLUSTER_NUM`でワーカープロセスの数を設定できます。
+- `STREAMING_API_BASE_URL`でStreaming APIのベースURLを指定できます。
 
-One process can handle a reasonably high number of connections. The streaming API can be hosted on a different subdomain if you want to e.g. avoid the overhead of nginx proxying the connections.
+ひとつのプロセスでたくさんの接続を処理できます。たとえば、接続をプロキシするNginxのオーバーヘッドを回避する場合は、Streaming APIを別のサブドメインでホストできます。
 
-### Background processing \(Sidekiq\) {#sidekiq}
+### バックグラウンド (Sidekiq) {#sidekiq}
 
-Many tasks in Mastodon are delegated to background processing to ensure the HTTP requests are fast, and to prevent HTTP request aborts from affecting the execution of those tasks. Sidekiq is a single process, with a configurable number of threads.
+Mastodonの多くの処理はバックグラウンドに回されます。HTTPリクエストを高速化し、HTTPリクエストの中止がこれらのタスクの実行に影響を与えないために重要です。Sidekiqは単一のプロセスで、スレッドの数を設定できます。
 
-#### Number of threads {#sidekiq-threads}
+#### スレッド数 {#sidekiq-threads}
 
-While the amount of threads in the web process affects the responsiveness of the Mastodon instance to the end-user, the amount of threads allocated to background processing affects how quickly posts can be delivered from the author to anyone else, how soon e-mails are sent out, etc.
+Webプロセスのスレッド数が多くなれば、自インスタンスのユーザーからのアクセスに対する反応が速くなり、バックグラウンドのスレッド数が多くなれば投稿を他のユーザーやサーバーに届けたり、メールを送信したりするのが速くなります。
 
-The amount of threads is not controlled by an environment variable in this case, but a command line argument in the invocation of Sidekiq, e.g.:
+スレッド数は環境変数ではなく、Sidekiqの呼び出しにおけるコマンドライン引数によって制御されます。
 
-```bash
+```sh
 bundle exec sidekiq -c 15
 ```
 
-Would start the sidekiq process with 15 threads. Please mind that each threads needs to be able to connect to the database, which means that the database pool needs to be large enough to support all the threads. The database pool size is controlled with the `DB_POOL` environment variable and must be at least the same as the number of threads.
+Sidekiqを15スレッドで開始します。各スレッドはそれぞれデータベースに接続できる必要があります。つまり、データベースプールはすべてのスレッドを処理するのに十分な量である必要があります。データベースプールのサイズは`DB_POOL`環境変数で制御され、少なくともスレッド数と同じでなければなりません。
 
-#### Queues {#sidekiq-queues}
+#### キュー {#sidekiq-queues}
 
-Sidekiq uses different queues for tasks of varying importance, where importance is defined by how much it would impact the user experience of your server’s local users if the queue wasn’t working, in order of descending importance:
+Sidekiqは様々な重要度のキューを様々な処理に使います。重要度は、それが機能しなかった場合にサーバーのローカルユーザーのUXにどの程度影響するかの度合いが高い順に定義されます。
 
-| Queue | Significance |
-| :--- | :--- |
-| `default` | All tasks that affect local users |
-| `push` | Delivery of payloads to other servers |
-| `mailers` | Delivery of e-mails |
-| `pull` | Fetching information from other servers |
+|キュー名|重要性|
+|:---:|------------|
+|`default`|ローカルユーザーに影響する全て|
+|`push`|他のサーバーにデータ(ペイロード)を送信|
+|`mailers`|メールの配信|
+|`pull`|他のサーバーからデータを取得|
 
-The default queues and their priorities are stored in `config/sidekiq.yml`, but can be overridden by the command-line invocation of Sidekiq, e.g.:
+`default`キューについては、`config/sidekiq.yml`にその重要性が記されていますが、Sidekiqのコマンドラインによって上書きできます。
 
-```bash
+```sh
 bundle exec sidekiq -q default
 ```
 
-To run just the `default` queue.
+これは `default`キューだけを実行するものです。
 
-The way Sidekiq works with queues, it first checks for tasks from the first queue, and if there are none, checks the next queue. This means, if the first queue is overfilled, the other queues will lag behind.
+Sidekiqのキューの処理法では、最初のキューのタスクを最初にチェックし、タスクがない場合は次のキューをチェックします。つまり、最初のキューがいっぱいになると、以降のキューの実行が遅れるということです。
 
-As a solution, it is possible to start different Sidekiq processes for the queues to ensure truly parallel execution, by e.g. creating multiple systemd services for Sidekiq with different arguments.
+それを防ぐためには、たとえば異なる引数を使用してSidekiqの複数のsystemdサービスを作成することにより、キューに対して異なるSidekiqプロセスを開始して、並列実行させるなどが考えられます。
 
-## Transaction pooling with pgBouncer {#pgbouncer}
+## pgBouncerによるトランザクション処理のプール {#pgbouncer}
 
-### Why you might need PgBouncer {#pgbouncer-why}
+pgBouncerによるトランザクションのプールについて説明します。
 
-If you start running out of available Postgres connections \(the default is 100\) then you may find PgBouncer to be a good solution. This document describes some common gotchas as well as good configuration defaults for Mastodon.
+### なぜpgBouncerが必要なのか {#pgbouncer-why}
 
-Note that you can check “PgHero” in the administration view to see how many Postgres connections are currently being used. Typically Mastodon uses as many connections as there are threads both in Puma, Sidekiq and the streaming API combined.
+使用可能なPostgres接続数が不足し始めた時(デフォルトは100)、pgBouncerはそれを解決するいい方法です。このドキュメントではいくつかのよくある間違いと標準的なMastodon向けの適切な設定について説明します。
 
-### Installing PgBouncer {#pgbouncer-install}
+管理者はWebUIの設定からPgHeroでPostgresの現在の接続数を確認できます。通常、Mastodonは、PumaやSidekiq、ストリーミングAPIを合わせたスレッド数と同数の接続を使用します。
 
-On Debian and Ubuntu:
+### pgBouncerのインストール {#pgbouncer-install}
 
-```bash
-sudo apt install pgbouncer
-```
+DebianやUbuntuでは、
 
-### Configuring PgBouncer {#pgbouncer-config}
+    sudo apt install pgbouncer
 
-#### Setting a password {#pgbouncer-password}
+### pgBouncerの設定 {#pgbouncer-config}
 
-First off, if your `mastodon` user in Postgres is set up wthout a password, you will need to set a password.
+#### パスワード設定 {#pgbouncer-password}
 
-Here’s how you might reset the password:
+まず、Postgresの`mastodon`ユーザーにパスワードが設定されていない場合、設定する必要があります。
 
-```bash
-psql -p 5432 -U mastodon mastodon_production -w
-```
+パスワードをリセットするには
 
-Then \(obviously, use a different password than the word “password”\):
+    psql -p 5432 -U mastodon mastodon_production -w
 
-```sql
-ALTER USER mastodon WITH PASSWORD 'password';
-```
+を実行し、("password"をパスワードにはしないとは思いますが)パスワードを設定する例です。
 
-Then `\q` to quit.
+    ALTER USER mastodon WITH PASSWORD 'password';
 
-#### Configuring userlist.txt {#pgbouncer-userlist}
+終わったら `\q`と打って終了します。
 
-Edit `/etc/pgbouncer/userlist.txt`
+#### userlist.txtの編集 {#pgbouncer-userlist}
 
-As long as you specify a user/password in pgbouncer.ini later, the values in userlist.txt do _not_ have to correspond to real PostgreSQL roles. You can arbitrarily define users and passwords, but you can reuse the “real” credentials for simplicity’s sake. Add the `mastodon` user to the `userlist.txt`:
+`/etc/pgbouncer/userlist.txt`を編集します
 
-```text
-"mastodon" "md5d75bb2be2d7086c6148944261a00f605"
-```
+後でpgbouncer.ini内でユーザー/パスワードを指定するならuserlist.txtの値は実際のPostgreSQLのロールに対応している必要はありません。ユーザーとパスワードを任意に定義できますが、簡単にするために「実際の」資格情報を再利用できます。userlist.txtにmastodonユーザーを追加します。
 
-Here we’re using the md5 scheme, where the md5 password is just the md5sum of `password + username` with the string `md5` prepended. For instance, to derive the hash for user `mastodon` with password `password`, you can do:
+    "mastodon" "md5d75bb2be2d7086c6148944261a00f605"
+
+ここではmd5を使っています。md5のパスワードは`md5`文字列を前に付けた`password + username`です。例えば、`mastodon`ユーザーのパスワードが`password`ならば、
 
 ```bash
 # ubuntu, debian, etc.
@@ -131,83 +128,90 @@ echo -n "passwordmastodon" | md5sum
 md5 -s "passwordmastodon"
 ```
 
-Then just add `md5` to the beginning of that.
+として、初めに`md5`と付ければ完了です。
 
-You’ll also want to create a `pgbouncer` admin user to log in to the PgBouncer admin database. So here’s a sample `userlist.txt`:
+`pgbouncer`というAdminユーザーをpgBouncerのAdminデータベースにログインするため作成します。`userlist.txt`の例です。
 
-```text
+```
 "mastodon" "md5d75bb2be2d7086c6148944261a00f605"
 "pgbouncer" "md5a45753afaca0db833a6f7c7b2864b9d9"
 ```
 
-In both cases the password is just `password`.
+`password`をパスワードにした場合の例です。
 
-#### Configuring pgbouncer.ini {#pgbouncer-ini}
+#### pgbouncer.iniの設定 {#pgbouncer-ini}
 
-Edit `/etc/pgbouncer/pgbouncer.ini`
+`/etc/pgbouncer/pgbouncer.ini`を編集します。
 
-Add a line under `[databases]` listing the Postgres databases you want to connect to. Here we’ll just have PgBouncer use the same username/password and database name to connect to the underlying Postgres database:
+接続するPostgresデータベースを`[databases]`の下に追加します。pgBouncerが同じユーザー名、パスワードとデータベース名を使用して、基礎となるPostgresデータベースに接続するようにします。
 
-```text
+```ini
 [databases]
 mastodon_production = host=127.0.0.1 port=5432 dbname=mastodon_production user=mastodon password=password
 ```
 
-The `listen_addr` and `listen_port` tells PgBouncer which address/port to accept connections. The defaults are fine:
+`listen_addr`と`listen_port`はpgBouncerが接続を受け入れるようにアドレス/ポートを入れます。デフォルト値で問題ありません。
 
-```text
+```ini
 listen_addr = 127.0.0.1
 listen_port = 6432
 ```
 
-Put `md5` as the `auth_type` \(assuming you’re using the md5 format in `userlist.txt`\):
+`auth_type`として`md5`を入れます。(`userlist.txt`でmd5形式を使っているとしています)
 
-Make sure the `pgbouncer` user is an admin:
+```ini
+auth_type = md5
+```
 
-**This next part is very important!** The default pooling mode is session-based, but for Mastodon we want transaction-based. In other words, a Postgres connection is created when a transaction is created and dropped when the transaction is done. So you’ll want to change the `pool_mode` from `session` to `transaction`:
+`pgbouncer`をAdminにします。
 
-Next up, `max_client_conn` defines how many connections PgBouncer itself will accept, and `default_pool_size` puts a limit on how many Postgres connections will be opened under the hood. \(In PgHero the number of connections reported will correspond to `default_pool_size` because it has no knowledge of PgBouncer.\)
+```ini
+admin_users = pgbouncer
+```
 
-The defaults are fine to start, and you can always increase them later:
+**これは大事な設定です！**標準のプールモードはセッションをもとにしていますが、Mastodonではトランザクションをもとにしています。つまり、Postgresはトランザクションによって接続され、それが完了されると接続も破棄されます。よって、`pool_mode`は`session`から`transaction`に変更します。
 
-```text
+```ini
+pool_mode = transaction
+```
+
+そして、`max_client_conn`でpgBouncer自身の最大接続数を定義し、`default_pool_size`でpgBouncer下のPostgres接続数を制限します。
+ (PgHeroはpgBouncerの存在を関知しないので、pgBouncerを導入した場合「Postgresの現在の接続数」は常に`default_pool_size`の値を表示します)
+
+初期値でも問題ありません。この値はいつでも変更可能です。
+
+```ini
 max_client_conn = 100
 default_pool_size = 20
 ```
 
-Don’t forget to reload or restart pgbouncer after making your changes:
+変更後はpgbouncerの再読込や再起動をお忘れなく。
 
-```bash
-sudo systemctl reload pgbouncer
-```
+    sudo systemctl reload pgbouncer
 
-#### Debugging that it all works {#pgbouncer-debug}
+#### すべてが機能するかをデバッグする {#pgbouncer-debug}
 
-You should be able to connect to PgBouncer just like you would with Postgres:
+Postgresと同じようにpgBouncerに接続できるはずです。
 
-```bash
-psql -p 6432 -U mastodon mastodon_production
-```
+    psql -p 6432 -U mastodon mastodon_production
 
-And then use your password to log in.
+そしてパスワードを使ってログインします。
 
-You can also check the PgBouncer logs like so:
+pgBouncerのログを確認します。
 
-```bash
-tail -f /var/log/postgresql/pgbouncer.log
-```
+    tail -f /var/log/postgresql/pgbouncer.log
 
-#### Configuring Mastodon to talk to PgBouncer {#pgbouncer-mastodon}
+#### MastodonがPgBouncerと接続するように設定 {#pgbouncer-mastodon}
 
-In your `.env.production` file, first off make sure that this is set:
+`.env.production`でまずこれが設定されていることを確認してください。
 
 ```bash
 PREPARED_STATEMENTS=false
 ```
 
-Since we’re using transaction-based pooling, we can’t use prepared statements.
+トランザクションベースのプーリングを使用しているため、準備済みのステートメントを使用できないからです。
 
-Next up, configure Mastodon to use port 6432 \(PgBouncer\) instead of 5432 \(Postgres\) and you should be good to go:
+そして、Postgresの5432ポートから、pgBouncerの6432番ポートに変更します。
 
 ```bash
 DB_HOST=localhost
@@ -217,48 +221,43 @@ DB_PASS=password
 DB_PORT=6432
 ```
 
-{{< hint style="warning" >}}
-You cannot use pgBouncer to perform `db:migrate` tasks. But this is easy to work around. If your postgres and pgbouncer are on the same host, it can be as simple as defining `DB_PORT=5432` together with `RAILS_ENV=production` when calling the task, for example: `RAILS_ENV=production DB_PORT=5432 bundle exec rails db:migrate` \(you can specify `DB_HOST` too if it’s different, etc\)
-{{< /hint >}}
+> **注意** pgBouncerを使って`db:migrate`はできません。しかし、これは簡単に回避できます。もし同一ホストにpgBouncerがあるなら、`DB_PORT=5432`と`RAILS_ENV=production`の後に付けるだけです。
+`RAILS_ENV=production DB_PORT=5432 bundle exec rails db:migrate` (`DB_HOST`なども自由に指定できます)
 
-#### Administering PgBouncer {#pgbouncer-admin}
 
-The easiest way to reboot is:
 
-```bash
-sudo systemctl restart pgbouncer
-```
+#### pgBouncerの管理 {#pgbouncer-admin}
 
-But if you’ve set up a PgBouncer admin user, you can also connect as the admin:
+再起動する
 
-```bash
-psql -p 6432 -U pgbouncer pgbouncer
-```
+    sudo systemctl restart pgbouncer
 
-And then do:
+pgBouncerのAdminユーザーを設定している場合、Adminとしてログインし、
 
-```sql
-RELOAD;
-```
+    psql -p 6432 -U pgbouncer pgbouncer
 
-Then use `\q` to quit.
+再読込します。
 
-## Separate Redis for cache {#redis}
+    RELOAD;
 
-Redis is used widely throughout the application, but some uses are more important than others. Home feeds, list feeds, and Sidekiq queues as well as the streaming API are backed by Redis and that’s important data you wouldn’t want to lose \(even though the loss can be survived, unlike the loss of the PostgreSQL database - never lose that!\). However, Redis is also used for volatile cache. If you are at a stage of scaling up where you are worried if your Redis can handle everything, you can use a different Redis database for the cache. In the environment, you can specify `CACHE_REDIS_URL` or individual parts like `CACHE_REDIS_HOST`, `CACHE_REDIS_PORT` etc. Unspecified parts fallback to the same values as without the cache prefix.
+完了後、`\q`で終了します。
 
-As far as configuring the Redis database goes, basically you can get rid of background saving to disk, since it doesn’t matter if the data gets lost on restart and you can save some disk I/O on that. You can also add a maximum memory limit and a key eviction policy, for that, see this guide: [Using Redis as an LRU cache](https://redis.io/topics/lru-cache)
+## Redisの分離 {#redis}
 
-## Read-replicas {#read-replicas}
+Redisはアプリケーション全体で広く使用されていますが、一部重要なものも含まれています。ホームフィード(各ユーザーのホームタイムライン)、リストフィード(各ユーザーのリストのタイムライン)、Sidekiqキュー、およびストリーミングAPIはRedisによってサポートされており、それは失うべきでない重要なデータです。(PostgreSQLデータベースの損失とは異なり、失っても復元可能ですが、もちろん失ってはいけません。)ただし、Redisは一次的なキャッシュにも使用されます。スケールアップ段階で、Redisがすべてを処理できるかどうか不明な場合は、キャッシュに別のRedisデータベースを使用できます。環境設定で`CACHE_REDIS_URL`や`CACHE_REDIS_HOST`, `CACHE_REDIS_PORT`を個別に指定するなどができます。未指定であれば、キャッシュプレフィックスがない場合と同じ値にフォールバックします。
 
-To reduce the load on your Postgresql server, you may wish to setup hot streaming replication \(read replica\). [See this guide for an example](https://cloud.google.com/community/tutorials/setting-up-postgres-hot-standby). You can make use of the replica in Mastodon in these ways:
+Redisデータベースの設定に関するものは、再起動時にデータが失われるかどうかは関係なくディスクI/Oを保存できるため、基本的にディスクへのバックグラウンド保存を回避することができます。最大メモリ制限とキー削除ポリシーを追加することもできます。詳しくはこのガイドを参照してください： [Using Redis as an LRU cache](https://redis.io/topics/lru-cache)
 
-* The streaming API server does not issue writes at all, so you can connect it straight to the replica. But it’s not querying the database very often anyway so the impact of this is little.
-* Use the Makara driver in the web and sidekiq processes, so that writes go to the master database, while reads go to the replica. Let’s talk about that.
+## リードレプリカ {#read-replicas}
 
-You will have to edit the `config/database.yml` file and replace the `production` section as follows:
+PostgreSQLサーバーの負荷を軽減するには、ホットストリーミングレプリケーション(リードレプリカ)をセットアップすることをお勧めします。 [参照](https://cloud.google.com/community/tutorials/setting-up-postgres-hot-standby)次の方法で、Mastdonのレプリカを使用できます。
 
-```yaml
+- ストリーミングAPIサーバーは書き込みが発生しないため、レプリカに直接接続できます。しかし、そもそもデータベースを頻繁にクエリすることはないため、効果はほとんどありません。
+- WebおよびsidekiqプロセスでMakaraドライバーを使用して、書き込みがmasterデータベースに、読み取りがレプリカに行われるようにします。以下ではこれについて書きます。
+
+`config/database.yml`を編集して、次のように`production`セクションを置き換える必要があります。
+
+```yml
 production:
   <<: *default
   adapter: postgresql_makara
@@ -274,9 +273,8 @@ production:
         url: postgresql://db_user:db_password@db_host:db_port/db_name
 ```
 
-Make sure the URLs point to wherever your PostgreSQL servers are. You can add multiple replicas. You could have a locally installed pgBouncer with configuration to connect to two different servers based on database name, e.g. “mastodon” going to master, “mastodon\_replica” going to the replica, so in the file above both URLs would point to the local pgBouncer with the same user, password, host and port, but different database name. There are many possibilities how this could be setup! For more information on Makara, [see their documentation](https://github.com/taskrabbit/makara#databaseyml).
+URLがPostgreSQLサーバーを指していることを確認してください。レプリカは複数追加できます。でローカルにインストールされたpgBouncerは、データベース名に基づいて2つの異なるサーバーに接続する設定をすることで使用することができます。たとえば、「mastodon」がマスターに、「mastodon_replica」がレプリカに行くため、両方のURLでローカルpgBouncerが指すようになります。ユーザー、パスワード、ホスト、ポートは同じですが、データベース名が異なります。これをどのようにセットアップできるかはまだ未知数です。Makaraの詳細については、[ドキュメント](https://github.com/taskrabbit/makara#databaseyml).を参照してください。
 
 {{< hint style="warning" >}}
-Sidekiq cannot reliably use read-replicas because even the tiniest replication lag leads to failing jobs due to queued up records not being found.
+Sidekiqは「ちゃんと」リードレプリカを使用できません。レプリケーションにかかるほんの数ミリ秒のラグが、キューに入れられたレコードが見つからないという理由でジョブを失敗させるからです。
 {{< /hint >}}
-

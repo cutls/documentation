@@ -1,25 +1,24 @@
 ---
-title: Setting up your new instance
-description: Things to do after installing Mastodon
+title: セットアップを完了する
+description: Mastodonをインストールした後にやること
 menu:
   docs:
     weight: 50
     parent: admin
 ---
 
-## Creating an admin account {#admin}
+## 管理者アカウントの作成 {#admin}
+### ブラウザを使用 {#admin-gui}
 
-### In the browser {#admin-gui}
-
-After signing up in the browser, you will need to use the command line to give your newly created account admin privileges. Assuming your username is `alice`:
+ブラウザでサインアップした後、コマンドラインを使用して、新しく作成したアカウントに管理者権限を付与する必要があります。`alice`というユーザーに付与するなら、
 
 ```bash
 RAILS_ENV=production bin/tootctl accounts modify alice --role admin
 ```
 
-### From the command line {#admin-cli}
+### コマンドラインを使用 {#admin-cli}
 
-You can create a new account using the command-line interface.
+コマンドラインでアカウントを作ることもできます。
 
 ```bash
 RAILS_ENV=production bin/tootctl accounts create \
@@ -29,18 +28,17 @@ RAILS_ENV=production bin/tootctl accounts create \
   --role admin
 ```
 
-A randomly generated password will be shown in the terminal.
+ランダムに生成されたパスワードがターミナルに表示されます。
 
-## Filling in server information {#info}
+## サーバー情報を書き加える {#info}
 
-After logging in, navigate to the **Site settings** page. While there are no technical requirements for filling in this information, it is considered crucial for operating a server for humans.
+ログイン後、**サイト設定**ページに移動します。この情報を入力するための技術的な要件はありませんが、コンピュータというより人間向けの設定と言えます。
 
-| Setting | Meaning |
-| :--- | :--- |
-| Contact username | Your username so people know who owns the server |
-| Business e-mail | An e-mail address so people locked out of their accounts, or people without accounts, can contact you |
-| Instance description | Why did you start this server? Who is it for? What makes it different? |
-| Custom extended information | You can put all sorts of information in here but a **code of conduct** is recommended |
+|設定|意味|
+|-------|-------|
+|連絡先ユーザー名 |他の人が管理者だとわかるようにするために必要 |
+|ビジネスメールアドレス| アカウントがロックされたり、サーバー外部の人から連絡を受けるために必要 |
+|サーバーの説明| サーバーの個性を説明|
+|短いサーバーの説明| もっと短い説明 |
 
-After you fill these in, simply hit “Save changes”.
-
+「変更の保存」を押して保存します。

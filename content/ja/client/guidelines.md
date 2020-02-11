@@ -1,54 +1,57 @@
 ---
-title: Guidelines and best practices
-description: Things to keep in mind when implementing a Mastodon app.
+title: ガイドラインとベストプラクティス
+description: Mastodonアプリ開発者が従うべきガイドラインやベストプラクティス。
 menu:
   docs:
     weight: 50
     parent: client
 ---
+## ログイン {#login}
 
-## Login {#login}
+**ユーザーはどんなMastodonサーバーにもログインできなければなりません。**つまり、フルハンドル(@alice@mastodon.tld)やサーバードメイン(mastodon.tld)を入力させてOAuth 2認証情報をアプリケーション登録APIから動的に取得してください。
 
-**The user must be able to login to any Mastodon server from the app**. This means you must ask for the server's domain and use the app registrations API to dynamically obtain OAuth2 credentials.
+## ユーザー名 {#username}
 
-## Usernames {#username}
+**分散しているということをユーザーに明示してください。** このコンテンツやユーザーが他のサーバーから来ているということを確認できるようにすべきです。`acct`(username + if remote: @domain)を表示させるなどがその一例です。
 
-**Decentralization must be transparent to the user**. It should be possible to see that a given user is from another server, by e.g. displaying their `acct` somewhere. Note that `acct` is equal to username for local users, and equal to username@domain for remote users.
+## IDのハンドリングとソート {#id}
 
-## Handling and sorting IDs {#id}
+バニラなMastodonのエンティティIDはは整数として生成され、文字列にキャストされます。しかし、だからといって「IDは整数」というわけではありませんし、整数にキャストされるべきでもありません。そのようなことをするとあなたのクライアントアプリケーションが整数オーバーフローを起こしてしまします。**常にIDは文字列として扱ってください**。
 
-Vanilla Mastodon entity IDs are generated as integers and cast to string. However, this does not mean that IDs _are_ integers, nor should they be cast to integer! Doing so can lead to broken client apps due to integer overflow, so **always treat IDs as strings.**
+つまり、IDは数字の文字列表現であるため、以下のようにして簡単に年代順に並び替えることができます。
 
-With that said, because IDs are string representations of numbers, they can still be sorted chronologically very easily by doing the following:
+1. サイズで並び替える。より新しいstatusesはより長いIDを持っているはずです。
+2. 単語的に並び替える。より新しいstatusesは各位を比較して高い数字が少なくとも1つあるはずです。
 
-1. Sort by size. Newer statuses will have longer IDs.
-2. Sort lexically. Newer statuses will have at least one digit that is higher when compared positionally.
+## フォーマット {#formatting}
 
-## Formatting {#formatting}
+プレーンテキストは外部サーバーからのコンテンツにはありません。そして、HTMLテキストのシンタックスルールはMastodonと他のFediverseアプリケーションの間で様々です。ステータスのコンテンツなどの特定の属性に対して、**MastdonはサニタイズされたHTMLを提供します**。
 
-Plain text is not available for content from remote servers, and plain text syntax rules may vary wildly between Mastodon and other fediverse applications. For certain attributes, such as the content of statuses, **Mastodon provides sanitized HTML**. You may expect these tags to appear in the content: `<p>`, `<br>`, `<span>`, `<a>`. See [HTML Sanitization](../spec/activitypub.md#html-sanitization) for more details.
+### HTMLタグ
 
-### Mentions, hashtags, and custom emoji {#tags}
+ `<p>`, `<br>`, `<span>`, `<a>`のみを含む(1つのコンテンツにすべてが含まれているわけではありません)リッチテキストがステータスのコンテンツなどとして返されます。
 
-Mentions and hashtags are `<a>` tags. Custom emoji remain in their plain text shortcode form. To give those entities their semantic meaning and add special handling, such as opening a mentioned profile within your app instead of as a web page, metadata is included with the [Status]({{< relref "../entities/status.md" >}}), which can be matched to a particular tag. See [Status &gt; Rendering attributes](../entities/status.md#rendering-attributes) for more information.
+### メンションとハッシュタグ、カスタム絵文字 {#tags}
 
-### Link shortening {#links}
+メンションやハッシュタグは`<a>`タグです。これらのリンクになんらかの意味を与え、Webページとしてではなくアプリ内でプロフィールを開くなどの特別な処理を追加するために、タグとメンションに対してのメタデータがステータスに含まれます。
 
-Links in Mastodon are not shortened using URL shorteners, and the usage of URL shorteners is heavily discouraged. URLs in text always count for 23 characters, and are intended to be shortened visually. For that purpose, a link is marked up like this:
+カスタム絵文字はショートコード形式(つまりプレーンテキスト)のままです。これに含まれるカスタム絵文字に関するメタデータはステータスに含まれます。画像を表示するには、ショートコードをテキストと照合する必要があります。
 
-```markup
+### 他のリンク {#links}
+
+コンテンツ内のリンクはそのまま含まれます。URLのリダイレクト短縮は行われません。ただし、視覚的にはURLは23文字以内となるよう設計されています。そのために、リンクは次のようにマークアップされます。
+
+```html
 <a href="https://example.com/page/that/is/very/long">
   <span class="invisible">https://</span>
   <span class="ellipsis">example.com/page</span>
   <span class="invisible">/that/is/very/long</span>
 </a>
 ```
-
-The spans with the `invisible` class can be hidden. The middle span is intended to remain visible. It may have no class if the URL is not very long, otherwise it will have an `ellipsis` class. No ellipsis \(`…`\) character is inserted in the markup, instead, you are expected to insert it yourself if you need it in your app.
+`invisible`は非表示に、中央のspanは表示されたままにすることを目的としています。中央のspanの後に省略記号(`...`)を挿入するかはアプリ側が決定してください。
 
 ## Filters {#filters}
 
-Clients must do their own text filtering based on filters returned from the API. The server will apply `irreversible` filters for home and notifications context, but anything else is still up to the client to filter!
+クライアントは、APIから返されたフィルターに基づいて独自のテキストフィルター処理を行う必要があります。ホームおよび通知に限定される`irreversible`(非可逆的除外)なフィルターに関してはサーバー側がフィルターを適用しまが、それ以外のものは、フィルター処理はクライアントが行います。
 
-Expired filters are not deleted by the server. They should no longer be applied but they are still stored by the server, as users may update the expiry time to re-enable the filter. It is up to users to delete those filters eventually.
-
+期限切れのフィルターはサーバーによって削除されません。それらは適用されるべきではありませんが、それらはまだサーバーによって保存されています。これらのフィルターを最終的に削除するのはクライアントです。
