@@ -60,3 +60,6 @@ other = "Response"
 
 [otherTranslations]
 other = "Also available in:"
+
+[internalNotice]
+other = "**Internal parameter**: Use HTTP `Link` header for pagination instead."
