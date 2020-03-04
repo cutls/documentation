@@ -1,61 +1,60 @@
 ---
-title: Hidden services
-description: Serving Mastodon through TOR hidden services.
+title: 秘匿サービス
+description: TORを使用してMastodonを提供する。
 menu:
   docs:
     weight: 20
     parent: admin-optional
 ---
 
-Mastodon can be served through Tor as an onion service. This will give you a \*.onion address that can only be used while connected to the Tor network.
+Mastodonはonion等のTorを経由して提供できます。これにより、Torネットワークに接続している間場合のみ使用できる* .onionアドレスが得られます。
 
-## Installing Tor {#install}
+### Torのインストール {#install}
 
-First Tor’s Debian archive needs to be added to apt.
+最初にTorのDebianアーカイブをaptに追加する必要があります。
 
-```text
+```
 deb https://deb.torproject.org/torproject.org stretch main
 deb-src https://deb.torproject.org/torproject.org stretch main
 ```
 
-Next add the gpg key.
+gpgキーを追加します。
 
 ```bash
 curl https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --import
-gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
 ```
 
-Finally install the required packages.
+依存パッケージをインストールします。
 
 ```bash
 apt install tor deb.torproject.org-keyring
 ```
 
-## Configure Tor {#configure}
+### Torのセットアップ {#configure}
 
-Edit the file at `/etc/tor/torrc` and add the following configuration.
+`/etc/tor/torrc`を編集し以下のように設定します。
 
-```text
+```bash
 HiddenServiceDir /var/lib/tor/hidden_service/
 HiddenServiceVersion 3
 HiddenServicePort 80 127.0.0.1:80
 ```
 
-Restart tor.
+torを再起動します。
 
 ```bash
 sudo service tor restart
 ```
 
-Your tor hostname can now be found at `/var/lib/tor/hidden_service/hostname`.
+Torのホスト名は `/var/lib/tor/hidden_service/hostname`で確認できます。
 
-## Move your Mastodon configuration {#nginx}
+### Mastodon設定の移行 {#nginx}
 
-We will need to tell Nginx about your Mastodon configuration twice. To keep things [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) we need to move the Mastodon configuration into its own file that can be referenced.
+NginxにMastodonの設定を2回書く必要があります。[DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)な状態に保つには、Mastodon設定を参照可能な独自のファイルに移動する必要があります。
 
-Create a new file at `/etc/nginx/snippets/mastodon.conf`. Put all of your Mastodon configuration parameters in this file with the exception of the `listen`, `server_name`, `include` and all of the SSL options. Your new file may look something like this.
+ `/etc/nginx/snippets/mastodon.conf`にファイルを作成します。`listen`, `server_name`, `include`とSSLオプションを除いた設定パラメータのすべてを入れます。新しいファイルは次のようになります。
 
-```text
+```
 add_header Referrer-Policy "same-origin";
 
 keepalive_timeout    70;
@@ -70,11 +69,11 @@ access_log /var/log/nginx/mastodon_access.log;
 error_log /var/log/nginx/mastodon_error.log warn;
 ```
 
-In place of your old Mastodon configuration add an include directive to this new configuration file.
+古いMastodon設定の代わりに、この新しい設定ファイルにincludeディレクティブを追加します。
 
-Your Nginx configuration file will be left looking something like this.
+あなたのNginx設定はこのようになるはずです。
 
-```text
+```
 server {
   listen 80;
   server_name mastodon.myhosting.com;
@@ -97,13 +96,12 @@ server {
 }
 ```
 
-## Serve Tor over http {#http}
+### httpでTorを提供する {#http}
 
-While it may be tempting to serve your Tor version of Mastodon over https it is not a good idea for most people. See [this](https://blog.torproject.org/facebook-hidden-services-and-https-certs) blog post from the Tor Project about why https certificates do not add value. Since you cannot get an SSL cert for an onion domain, you will also be plagued with certificate errors when trying to use your Mastodon instance. A Tor developer has more recently spelled out the reasons why serving a Tor service over https is not beneficial for most use cases [here](https://matt.traudt.xyz/p/o44SnkW2.html).
+Tor版のMastodonをhttps経由で提供するのは魅力的かもしれませんが、ほとんどの人にとっては良い考えではありません。https証明書が付加価値を持たない理由については、Torプロジェクトの[このブログ投稿](https://blog.torproject.org/facebook-hidden-services-and-https-certs)を参照してください。*.onionドメインのSSL証明書を取得できないため、Mastodonインスタンスを使用しようとすると、証明書エラーに悩まされます。Tor開発者は最近、httpsを介してTorサービスを提供することがほとんどの場合に有益でない理由を説明しました([参照](https://matt.traudt.xyz/p/o44SnkW2.html))。
+解決策は、Torの場合httpを介してMastodonインスタンスを提供することです。これは、追加の構成を既存のNginx構成の前に追記することで可能です。
 
-The solution is to serve your Mastodon instance over http, but only for Tor. This can be added by pre-pending an additional configuration to your Nginx configuration.
-
-```text
+```
 server {
   listen 80;
   server_name mastodon.qKnFwnNH2oH4QhQ7CoRf7HYj8wCwpDwsa8ohJmcPG9JodMZvVA6psKq7qKnFwnNH2oH4QhQ7CoRf7HYj8wCwpDwsa8ohJmcPG9JodMZvVA6psKq7.onion;
@@ -115,7 +113,7 @@ server {
   server_name mastodon.myhosting.com;
   return 301 https://$server_name$request_uri;
 }
-
+ 
 map $http_upgrade $connection_upgrade {
   default upgrade;
   ''      close;
@@ -132,21 +130,20 @@ server {
 }
 ```
 
-Replace the long hash provided here with your Tor domain located in the file at `/var/lib/tor/hidden_service/hostname`.
+ここで提供される長いハッシュ値を、`/var/lib/tor/hidden_service/hostname`内のファイルにあるTorドメインに置き換えます
 
-Note that the onion hostname has been prefixed with “mastodon.”. Your Tor address acts a wildcard domain. All subdomains will be routed through, and you can configure Nginx to respond to any subdomain you wish. If you do not wish to host any other services on your tor address you can omit the subdomain, or choose a different subdomain.
+onionのホスト名には"mastodon"というプレフィックスが付いていることに注意してください。Torアドレスはワイルドカードドメインとして機能します。すべてのサブドメインはルーティングされ、アクセスされたサブドメインに応答するようにNginxを設定できます。このTorアドレスで他のサービスをホストしたくない場合は、サブドメインを省略するか、別のサブドメインを選択できます。
 
-Here you can see the payoff of moving your mastodon configurations to a different file. Without this all of your configurations would have to be copied to both places. Any change to your configuration would have to be made both places.
+ここでMastodonの設定を別のファイルに移動させることの意義を見出せます。これがないと、すべての設定を両方の場所にコピーする必要があり、設定の変更は、両方の場所で行う必要があります。
 
-Restart your web server.
+Nginxを再起動します。
 
 ```bash
 service nginx restart
 ```
 
-## Gotchas {#gotchas}
+### 知っておくべきこと {#gotchas}
 
-There are a few things you will need to be aware of. Certain redirects will push your users to https. They will have to manually replace the URL with http to continue.
+リダイレクトにより、ユーザーはhttpsにリダイレクトされます。続行するには、URLを手動でhttpに置き換える必要があります。
 
-Various resources, such as images, will still be offered through your regular non-Tor domain. How much of a problem this is will depend greatly on your user’s level of caution.
-
+画像などのさまざまなリソースは、通常の非Torドメインを通じて引き続き提供されます。これがどの程度の問題であるかは、ユーザーに依存します。

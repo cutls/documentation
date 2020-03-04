@@ -1,54 +1,57 @@
 ---
-title: Backing up your server
-description: Setting up regular backups (optional, but not really)
+title: サーバのバックアップ
+description: 日常的にバックアップを取る方法。(任意という名の強制)
 menu:
   docs:
     weight: 80
     parent: admin
 ---
 
-For any real-world use, you should make sure to regularly backup your Mastodon server.
+現実問題として、Mastodonサーバーを日常的に、かつ確実にバックアップを取らないといけません。
 
-## Overview {#overview}
+## 概要 {#overview}
 
-Things that need to be backed up in order of importance:
+バックアップすべきものを重要度順に並べています。
 
-1. PostgreSQL database
-2. Application secrets from the `.env.production` file or equivalent
-3. User-uploaded files
-4. Redis database
+1. PostgreSQLデータベース
+2. `.env.production`等の機密ファイル
+3. ユーザーがアップロードしたファイル
+4. Redisデータベース
 
-## Failure modes {#failure}
+### 「失敗」と「その後」
 
-There are two failure types that people in general may guard for: The failure of the hardware, such as data corruption on the disk; and human and software error, such as wrongful deletion of particular piece of data. In this documentation, only the former type is considered.
+一般に人間が回避することができる障害のタイプは2つあります。
 
-A lost PostgreSQL database is complete game over. Mastodon stores all the most important data in the PostgreSQL database. If the database disappears, all the accounts, posts and followers on your server will disappear with it.
+1. ディスク上のデータ破損などのハードウェアの障害特定のデータの不正な削除など
+1. 人的およびソフトウェアのエラー
 
-If you lose application secrets, some functions of Mastodon will stop working for your users, they will be logged out, two-factor authentication will become unavailable, Web Push API subscriptions will stop working.
+このドキュメントでは、1.のみを扱います。
 
-If you lose user-uploaded files, you will lose avatars, headers, and media attachments, but Mastodon _will_ work moving forward.
+PostgreSQLのデータベースを失ってしまった場合、もうお手上げ状態です。Mastodonは重要なデータのほぼ全てをPostgreSQLデータベースに保存しています。この場合、全てのアカウントや投稿、フォロワー情報なども失われます。
 
-Losing the Redis database is almost harmless: The only irrecoverable data will be the contents of the Sidekiq queues and scheduled retries of previously failed jobs. The home and list feeds are stored in Redis, but can be regenerated with tootctl.
+機密ファイルを失ってしまった場合、一部のMastodonの機能が利用不可になります。ユーザーはログアウトされ、2要素認証は利用できなくなり、Web Push APIは機能しなくなります。
 
-The best backups are so-called off-site backups, i.e. ones that are not stored on the same machine as Mastodon itself. If the server you are hosted on goes on fire and the hard disk drive explodes, backups stored on that same hard drive won’t be of much use.
+ユーザーがアップロードしたファイルを失うということは、アバター、ヘッダー、メディアの添付ファイルが失われるということですが、Mastodon自体は停止しません。
 
-## Backing up application secrets {#env}
+Redisデータベースを失ってもほとんど無害です。回復不能なデータは、Sidekiqキューの内容と、以前に失敗したジョブのスケジュールされた再試行だけです。ホームフィードとリストフィードはRedisに保存されますが、tootctlを使用して再生成できます。
 
-Application secrets are the easiest to backup, since they never change. You only need to store `.env.production` somewhere safe.
+最適なバックアップは、いわゆるオフサイトバックアップ、つまりMastodon自体と同じマシンに保存されていないバックアップです。ホストされているサーバーのハードディスクドライブが爆発した場合、同じハードドライブに保存されているバックアップはあまり役に立ちません。
 
-## Backing up PostgreSQL {#postgresql}
+### 機密ファイルのバックアップ
 
-PostgreSQL is at risk of data corruption from power cuts, hard disk drive failure, and botched schema migrations. For that reason, occassionally making a backup with `pg_dump` or `pg_dumpall` is recommended.
+アプリケーションの機密ファイルは変更されないため、バックアップが最も簡単です。`.env.production`をどこか安全なところに保存してください。
 
-For high-availability setups, it is possible to use hot streaming replication to have a second PostgreSQL server with always up-to-date data, ready to be switched over to if the other server goes down.
+### PostgreSQLのバックアップ
 
-## Backing up user-uploaded files {#media}
+PostgreSQLは、停電、ハードディスクドライブの障害、スキーマの移行の失敗によるデータ破損の危険にさらされています。そのため、ときどき`pg_dump`または`pg_dumpall`でバックアップを作成することをおすすめします。
 
-If you are using an external object storage provider such as Amazon S3, Google Cloud or Wasabi, then you don’t need to worry about backing those up. The respective companies are responsible for handling hardware failures.
+高可用性が求められる場合、ホットストリーミングレプリケーションを使用して、常に最新のデータを持つ2番目のPostgreSQLサーバーを用意し、他のサーバーがダウンした場合に切り替えることができます。
 
-If you are using local file storage, then it’s up to you to make copies of the sizeable `public/system` directory, where uploaded files are stored by default.
+### ユーザーがアップロードしたファイルのバックアップ
 
-## Backing up Redis {#redis}
+Amazon S3、Google Cloud、Wasabiなどの外部オブジェクトストレージを使用している場合、これらのバックアップについて心配する必要はありません。各企業は、ハードウェア障害の処理に責任を負っています。
+ローカルファイルストレージを使用している場合、アップロードされたファイルはデフォルトで`public/system`に保存されます。この可変ディレクトリのコピーを作成するのはあなた次第です。
 
-Backing up Redis is easy. Redis regularly writes to `/var/lib/redis/dump.rdb` which is the only file you need to make a copy of.
+### Redisのバックアップ
 
+Redisのバックアップは簡単です。Redisは、`/var/lib/redis/dump.rdb`にバックアップが必要な内容の全てを含んでいます。

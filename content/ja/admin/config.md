@@ -1,6 +1,6 @@
 ---
-title: Configuring your environment
-description: Setting environment variables for your Mastodon installation.
+title: 環境設定
+description: .env.productionの設定方法
 menu:
   docs:
     weight: 30
@@ -8,16 +8,17 @@ menu:
 ---
 
 {{< hint style="warning" >}}
-This page is under construction.
+作成中
 {{< /hint >}}
 
-Mastodon uses environment variables as its configuration.
+Mastodonは環境変数をMastodonの設定として利用します。
 
 For convenience, it can read them from a flat file called `.env.production` in the Mastodon directory, but they can always be overridden by a specific process. For example, systemd service files can read environment variables from an `EnvironmentFile` or from inline definitions with `Environment`, so you can have different configuration parameters for specific services. They can also be specified when calling Mastodon from the command line.
+簡便のため、Mastodonディレクトリ内の`.env.production`と呼ばれるテキストファイルから環境変数を読み取ります。しかし、これはいつでも特定のプロセスによって上書きされる可能性があります。例えば、systemdサービスは`EnvironmentFile`(ファイル)や`Environment`(インライン定義)から環境変数を取得することができます。そのため、特定のサービスに対して異なる構成パラメーターを使用できます。 コマンドラインからMastodonを呼び出すときにも指定できます。
 
-## Basic {#basic}
+## 一般 {#basic}
 
-### Federation {#federation}
+### 連合 {#federation}
 
 * `LOCAL_DOMAIN`
 * `WEB_DOMAIN`
@@ -25,32 +26,31 @@ For convenience, it can read them from a flat file called `.env.production` in t
 
 #### `AUTHORIZED_FETCH` {#authorized_fetch}
 
-  When set to `true`, Mastodon will stop inline-signing activities, and will require remote servers to authenticate when fetching public and unlisted toots.
+  `true`に設定すると、Mastodonは内部で署名しなくなります。そして公開ないし未収載トゥートを取得するときには外部サーバによる認証を要求します。
   
-  This prevents blocked domains from fetching your public toots, at the cost of possibly increased computations, and broken compatibility with software that does not sign fetch requests (such as Mastodon prior to version 3.0).
+  つまりブロックしているドメインに公開トゥートを取得させないようにできますが、計算量が増大します。また、Mastodon 3.0以前などフェッチリクエストに署名しないソフトウェアとの互換性を失います。
   
-  Note that this mode cannot guarantee that bad actors do not access your public and unlisted toots, it merely makes it a bit more difficult.
+  そして、`true`に設定すると悪意あるアクターが公開トゥートをや未収載トゥートにアクセスしないということを保証できません。
 
 #### `WHITELIST_MODE` {#whitelist_mode}
 
-  When set to `true`, Mastodon will restrict federation to whitelisted servers only, as well as disable public pages and some client APIs.
-  Whitelist mode implies authorized fetch mode.
+  `true`に設定すると、Mastodonはホワイトリストに登録されたサーバ意外と連合しません。また、公開ページや一部のクライアントAPIが無効化されます。つまり、事実上ホワイトリストモードは認可制取得モードということです。
   
-  When switching an existing instance to whitelist mode, the following command should be used to remove any already existent data on non-whitelisted domains:
+  インスタンスをホワイトリストに移行するためには、以下のコマンドを実行しホワイトリストに登録されていないドメインによるデータを削除してください。
   ```
   tootctl domain purge --whitelist-mode
   ```
   
-  Note that, while introduced in Mastodon 3.0, `WHITELIST_MODE` is broken on Mastodon 3.0 and 3.0.1.
+  `WHITELIST_MODE`はMastodon 3.0で追加されましたが、Mastodon 3.0, 3.0.1では使用できません。
 
-### Secrets {#secrets}
+### シークレット {#secrets}
 
 * `SECRET_KEY_BASE`
 * `OTP_SECRET`
 * `VAPID_PRIVATE_KEY`
 * `VAPID_PUBLIC_KEY`
 
-### Deployment {#deployment}
+### デプロイ {#deployment}
 
 * `RAILS_ENV`
 * `RAILS_SERVE_STATIC_FILES`
@@ -61,7 +61,7 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `NODE_ENV`
 * `BIND`
 
-### Scaling options {#scaling}
+### スケーリング {#scaling}
 
 * `WEB_CONCURRENCY`
 * `MAX_THREADS`
@@ -69,7 +69,7 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `STREAMING_API_BASE_URL`
 * `STREAMING_CLUSTER_NUM`
 
-## Database connections {#connections}
+## データベースとの接続 {#connections}
 
 ### PostgreSQL {#postgresql}
 
@@ -103,7 +103,7 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `STATSD_ADDR`
 * `STATSD_NAMESPACE`
 
-## Limits {#limits}
+## 制限 {#limits}
 
 * `SINGLE_USER_MODE`
 * `EMAIL_DOMAIN_WHITELIST`
@@ -111,7 +111,7 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `MAX_SESSION_ACTIVATIONS`
 * `USER_ACTIVE_DAYS`
 
-## E-mail {#email}
+## メール配信 {#email}
 
 * `SMTP_SERVER`
 * `SMTP_PORT`
@@ -126,17 +126,17 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `SMTP_ENABLE_STARTTLS_AUTO`
 * `SMTP_TLS`
 
-## File storage {#cdn}
+## ファイルストレージ {#cdn}
 
 * `CDN_HOST`
 * `S3_ALIAS_HOST`
 
-### Local file storage {#paperclip}
+### ローカル {#paperclip}
 
 * `PAPERCLIP_ROOT_PATH`
 * `PAPERCLIP_ROOT_URL`
 
-### Amazon S3 and compatible {#s3}
+### S3互換 {#s3}
 
 * `S3_ENABLED`
 * `S3_BUCKET`
@@ -162,7 +162,7 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `SWIFT_DOMAIN_NAME`
 * `SWIFT_CACHE_TTL`
 
-## External authentication {#external-authentication}
+## 外部認証 {#external-authentication}
 
 * `OAUTH_REDIRECT_AT_SIGN_IN`
 
@@ -232,12 +232,12 @@ For convenience, it can read them from a flat file called `.env.production` in t
 * `SAML_ATTRIBUTES_STATEMENTS_VERIFIED`
 * `SAML_ATTRIBUTES_STATEMENTS_VERIFIED_EMAIL`
 
-## Hidden services {#hidden-services}
+## 秘匿サービス {#hidden-services}
 
 * `http_proxy`
 * `ALLOW_ACCESS_TO_HIDDEN_SERVICE`
 
-## Other {#other}
+## その他 {#other}
 
 * `SKIP_POST_DEPLOYMENT_MIGRATIONS`
 

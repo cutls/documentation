@@ -1,5 +1,5 @@
 ---
-title: Single Sign On
+title: シングルサインオン
 menu:
   docs:
     weight: 30
@@ -7,6 +7,6 @@ menu:
 ---
 
 {{< hint style="danger" >}}
-This page is under construction.
+準備中
 {{< /hint >}}
 
