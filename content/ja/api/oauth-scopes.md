@@ -1,49 +1,49 @@
 ---
-title: OAuth Scopes
-description: Defining what you have permission to do with the API
+title: OAuthスコープ
+description: APIでできることを。権限。
 menu:
   docs:
     weight: 10
     parent: api
 ---
 
-## OAuth Scopes
+## OAuthスコープ
 
-The API is divided up into access scopes. The scopes are hierarchical, i.e. if you have access to `read`, you automatically have access to `read:accounts`. **It is recommended that you request as little as possible for your application.**
+スコープは階層的です。つまり、`read`にアクセスできる場合、`read:accounts`は自動的に適用されます。**アプリケーションはユーザーに対してできるだけ少ない要求を行うようにすべきです**
 
-Multiple scopes can be requested at the same time: During app creation with the `scopes` param, and during the authorization phase with the `scope` query param \(space-separate the scopes\).
+複数のスコープを同時に要求できます。パラメーターを使用してアプリを作成するとき`scopes`、OAuthで認証するときは`scope`クエリパラメーターを使用します(スコープをスペースで区切ります)。
 
 {{< hint style="info" >}}
-Mind the `scope` vs `scopes` difference. This is because `scope` is a standard OAuth parameter name, so it is used in the OAuth methods. Mastodon’s own REST API uses the more appropriate `scopes`.
+> **注意** `scope`と`scopes`の違いに気をつけてください。`scope`は標準的なOAuthのパラメーター名でOAuthメソッド中はこれを使いますが、MastodonのAPIではより適切な`scopes`が用いられます。
 {{< /hint >}}
 
-If you do not specify a `scope` in your authorization request, or a `scopes` in your app creation request, the resulting access token / app will default to `read` access.
+`scope`が認証時に無かったり、`scopes`がアプリケーション登録時に無い場合は`read`として扱われます。
 
-The set of scopes saved during app creation must include all the scopes that you will request in the authorization request, otherwise authorization will fail.
+アプリの作成中に保存されるスコープのセットには、認証リクエストでリクエストするすべてのスコープが含まれている必要があります。そうでない場合、認証は失敗します。
 
-### Version history {#versions}
+### 実装履歴 {#versions}
 
 - 0.9.0 - read, write, follow
 - 2.4.0 - push
-- 2.4.3 - granular scopes [https://github.com/tootsuite/mastodon/pull/7929](https://github.com/tootsuite/mastodon/pull/7929)
-- 2.6.0 - read:reports deprecated \(unused stub\) [https://github.com/tootsuite/mastodon/pull/8736/commits/adcf23f1d00c8ff6877ca2ee2af258f326ae4e1f](https://github.com/tootsuite/mastodon/pull/8736/commits/adcf23f1d00c8ff6877ca2ee2af258f326ae4e1f)
-- 2.6.0 - write:conversations added [https://github.com/tootsuite/mastodon/pull/9009](https://github.com/tootsuite/mastodon/pull/9009)
-- 2.9.1 - Admin scopes added [https://github.com/tootsuite/mastodon/pull/9387](https://github.com/tootsuite/mastodon/pull/9387)
-- 3.1.0 - Bookmark scopes added
+- 2.4.3 - 詳細なスコープ(`:`以下のスコープ) [https://github.com/tootsuite/mastodon/pull/7929](https://github.com/tootsuite/mastodon/pull/7929)
+- 2.6.0 - read:reportsを削除 \(unused stub\) [https://github.com/tootsuite/mastodon/pull/8736/commits/adcf23f1d00c8ff6877ca2ee2af258f326ae4e1f](https://github.com/tootsuite/mastodon/pull/8736/commits/adcf23f1d00c8ff6877ca2ee2af258f326ae4e1f)
+- 2.6.0 - write:conversationsスコープを追加 [https://github.com/tootsuite/mastodon/pull/9009](https://github.com/tootsuite/mastodon/pull/9009)
+- 2.9.1 - Admin関連スコープを追加 [https://github.com/tootsuite/mastodon/pull/9387](https://github.com/tootsuite/mastodon/pull/9387)
+- 3.1.0 - Bookmark関連スコープを追加
 
-## List of scopes
+## スコープ一覧
 
 ### `read` {#read}
 
-Grants access to read data. Requesting `read` will also grant child scopes shown in the left column of the table below.
+データの読み取りを許可します。`read`は`read:*`を意味します。read:~と書いてあるものが全て許可されます。
 
 ### `write` {#write}
 
-Grants access to write data. Requesting `write` will also grant child scopes shown in the right column of the table below.
+データの変更を許可します。`write`は`write:*`を意味します。write:~と書いてあるものが全て許可されます。
 
 ### `follow` {#follow}
 
-Grants access to manage relationships. Requesting `follow` will also grant the following child scopes, shown in bold in the table:
+フォロー関係を読み取り、変更できます。`follow`は`follow:*`を意味します。follow:~と書いてあるものが全て許可されます。
 
 * `read:blocks`, `write:blocks`
 * `read:follows`, `write:follows`
@@ -51,11 +51,11 @@ Grants access to manage relationships. Requesting `follow` will also grant the f
 
 ### `push` {#push}
 
-Grants access to [Web Push API subscriptions.]({{< relref "../methods/notifications/push.md" >}}) Added in Mastodon 2.4.0.
+[Web Push APIの購読]({{< relref "../methods/notifications/push.md" >}})を許可します。Mastodon 2.4.0で追加されました。
 
-### Admin scopes {#admin}
+### Admin関連スコープ {#admin}
 
-Used for moderation API. Added in Mastodon 2.9.1. The following granular scopes are available \(note that there is no singular `admin` scope\):
+モデレーションAPIのために使用されます。Mastodon 2.9.1で追加されました。以下の`:`1階層スコープを許容します。つまり`admin`というスコープはなく、`admin:read`と`admin:write`が独立して存在します。
 
 * `admin:read`
   * `admin:read:accounts`
@@ -64,7 +64,7 @@ Used for moderation API. Added in Mastodon 2.9.1. The following granular scopes 
   * `admin:write:accounts`
   * `admin:write:reports`
 
-## Granular scopes {#granular}
+## 詳細なスコープ {#granular}
 
 | read | write |
 | :--- | :--- |

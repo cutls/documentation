@@ -8,4 +8,4 @@ menu:
 ---
 ---
 
-[勝手 Mastodon tootctl リファレンス](https://qiita.com/kumasun/items/870769d7db4d95cde238)に詳しいため、ここに掲載いたしません。英語版を見ることはできます。
+[勝手 Mastodon tootctl リファレンス](https://qiita.com/kumasun/items/870769d7db4d95cde238)に詳しいため、ここには掲載いたしません。英語版を見ることはできます。
