@@ -1,40 +1,41 @@
 ---
-title: Getting started with the API
-description: 'A primer on REST APIs, HTTP requests and responses, and parameters.'
+title: API事始め
+description: REST APIやHTTPリクエスト、レスポンス、パラメータの基本事項
 menu:
   docs:
     weight: 10
     parent: client
 ---
 
-## An introduction to REST {#rest}
+## RESTの概要 {#rest}
 
-Mastodon provides access to its data over a REST API. REST stands for REpresentational State Transfer, but for our purposes, just think of it as sending and receiving information about various resources based on the request. The Mastodon REST API uses HTTP for its requests, and JSON for its payloads.
+MastodonはREST APIを通じてデータを提供します。RESTとは REpresentational State Transfer の略です。しかし、Mastodonではリクエストに基づいた様々なリソースについて情報を送受信するものとしてREST APIを使用します。Mastodon REST APIはリクエストにHTTPを、ペイロードにJSONを使用します。
 
-## Understanding HTTP requests and responses {#http}
 
-REST API endpoints can be called with certain HTTP methods, and more than one method can be used on the same endpoint. The Mastodon API will generally use the following HTTP methods:
+## HTTPリクエストとレスポンスの説明 {#http}
 
-* **GET**: Read or view a resource.
-* **POST**: Send information to the server.
-* **PUT** \| **PATCH**: Update a resource.
-* **DELETE**: Removes a resource.
+REST APIエンドポイントは特定のHTTPメソッドで呼び出されます。そして、同一のエンドポイントに複数のHTTPメソッドを使い分ける場合もあります。Mastodon APIは一般に以下のHTTPメソッドを使用します。
 
-Your favorite programming language probably has a utility or library to make HTTP requests. For the purposes of this section, the cURL utility will be used for examples, which is a command-line utility included with many operating systems by default \(as `curl`\).
+* **GET**: リソースの読み込みと閲覧
+* **POST**: サーバへの情報の送信
+* **PUT** \| **PATCH**: リソースのアップデート
+* **DELETE**: リソースの削除
 
-With cURL, the default HTTP method is GET, but you can specify the type of request to make by using the `--request` or `-X` flag; for example, `curl -X POST` will send a POST request instead of a GET request. You may also want to use the `-i` flag to include additional HTTP headers that may be returned as part of the response where relevant.
+あなたが使用するプログラミング言語はおそらくHTTPリクエストのためのユーティリティやライブラリを提供しています。この章では、cURLを例として用います。これは、`curl`コマンドとして多くのOSにプリインストールされているコマンドラインユーティリティです。
 
-## Providing parameters {#parameters}
+cURLでは、デフォルトのHTTPメソッドはGETです。`--request`または`-X`フラグで特定のメソッドを指定できます。例えば、`curl -X POST`でGETではなくPOSTメソッドでリクエストすることができます。また、`-i`フラグでHTTPヘッダーを追加で含めることもできます。
 
-HTTP requests can include additional parameters in various different ways, but most notably, the Mastodon API understands query strings, form data, and JSON.
+## パラメータの付与 {#parameters}
+
+HTTPリクエストに様々な方法で追加のパラメータを付与することができます。Mastodon APIではクエリ文字列、form data、JSONのいずれかのみを解釈します。
 
 {{< hint style="info" >}}
-Query strings, form data, and JSON submitted via POST body are equally understood by the API. It is expected that query strings are used for GET requests, and form data or JSON is used for all other requests.
+POSTボディとして送信されたクエリ文字列、from data、JSONは等しくAPIによって解釈されます。クエリ文字列はGETリクエストに、form dataとJSONはGET以外のリクエストに使用されるのが一般的です。
 {{< /hint >}}
 
-### Query strings {#query-strings}
+### クエリ文字列 {#query-strings}
 
-Simply request the URL, but append query strings to the end. Query strings can be appended by first typing ? and then appending them in the form of parameter=value. Multiple query strings can be appended by separating them with &. For example:
+普通のURLの末尾にクエリ文字列を追加してリクエストします。クエリ文字列は`?`を先頭に`パラメータ=値`の形で追加していきます。複数のクエリ文字列同士は`&`で区切られます。例:
 
 ```bash
 curl https://mastodon.example/endpoint?q=test&n=0
@@ -42,19 +43,19 @@ curl https://mastodon.example/endpoint?q=test&n=0
 
 ### Form data {#form-data}
 
-Instead of mutating the URL with query strings, you can send the data separately. With cURL, this is done by passing it with the `--data` or `-d` flag. Data may be sent together similar to query strings, or it may be sent separately as key-value pairs with multiple data flags. You may also use the `--form` or `-F` flag for key-value pairs, which also allows sending multipart data such as files. For example:
+クエリ文字列で直接URLに手を加える代わりに、データを別に送信することもできます。cURLでは、`--data`または`-d`フラグを付与することでデータを指定できます。データはクエリ文字列のときと同じように一緒にして指定しても、複数のデータフラグを使用してパラメータ - 値ごとに指定しても構いません。また、`--form`または`-F`フラグをパラメータ - 値ペアごとに指定すると、ファイルのようなマルチパートなデータを送信することができます。例:
 
 ```bash
-# send raw data as query strings
+# そのままクエリ文字列として送信
 curl -X POST \
      -d 'q=test&n=0' \
      https://mastodon.example/endpoint
-# send raw data separately
+# 別々にして送信
 curl -X POST \
      -d 'q=test' \
      -d 'n=0' \
      https://mastodon.example/endpoint
-# explicit form-encoded; allows for multipart data
+# 明示的にフォームエンコードされます。マルチパートデータを扱えます。
 curl -X POST \
      -F 'q=test' \
      -F 'n=0' \
@@ -64,7 +65,7 @@ curl -X POST \
 
 ### JSON {#json}
 
-Similar to sending form data, but with an additional header to specify that the data is in JSON format. To send a JSON request with cURL, specify the JSON content type with a header, then send the JSON data as form data:
+form dataのときと同じようなものですが、JSONフォーマットであると宣言するためにヘッダーを付与します。cURLでJSONデータを送信するためには、content typeをJSONに指定して、そしてform dataとしてJSONを送信します。
 
 ```bash
 curl -X POST \
@@ -73,11 +74,11 @@ curl -X POST \
      https://mastodon.example/endpoint
 ```
 
-## Data types {#types}
+## データの種類 {#types}
 
-### Multiple values \(Array\) {#array}
+### 複数の値 \(配列\) {#array}
 
-An array parameter must encoded using bracket notation, e.g. `array[]=foo&array[]=bar` would be translated into the following:
+パラメーターに配列を用いる場合は、ブラケット表記を使用してエンコードする必要があります。例えば、`array[]=foo&array[]=bar`は以下のように解釈されます。
 
 ```ruby
 array = [
@@ -86,7 +87,7 @@ array = [
 ]
 ```
 
-As JSON, arrays are formatted like so:
+JSONとして解釈する場合の配列の表現
 
 ```javascript
 {
@@ -94,43 +95,44 @@ As JSON, arrays are formatted like so:
 }
 ```
 
-### Nested parameters \(Hash\) {#hash}
+### ネストされたパラメータ \(ハッシュ\) {#hash}
 
-Some parameters need to be nested. For that, bracket notation must also be used. For example, `source[privacy]=public&source[language]=en` would be translated into:
+一部のパラメータはネストされる必要があります。そのためにはブラケット表記を使用してください。例えば、`source[privacy]=public&source[language]=ja`は以下のように解釈されます。
 
 ```ruby
 source = {
   privacy: 'public',
-  language: 'en',
+  language: 'ja',
 }
 ```
 
-As JSON, hashes are formatted like so:
+JSONとして解釈する場合、発しぃは以下のように解釈されます。
 
 ```javascript
 {
   "source": {
     "privacy": "public",
-    "language", "en"
+    "language", "ja"
   }
 }
 ```
 
-### True-or-false \(Booleans\) {#boolean}
+### 真偽値 \(Boolean\) {#boolean}
 
-A boolean value is considered false for the values `0`, `f`, `F`, `false`, `FALSE`, `off`, `OFF`, considered to not be provided for empty strings, and considered to be true for all other values. When using JSON data, use the literals `true`, `false`, and `null` instead.
+`0`, `f`, `F`, `false`, `FALSE`, `off`, `OFF`は偽として解釈されます。空の文字列だった場合「値が提供されなかった」として解釈されます。その他の文字列は真として解釈されます。JSONデータを使用している場合、代わりに`true`,`false`,`null`リテラル表現を使用してください。
 
-### Files {#file}
+### ファイル {#file}
 
-File uploads must be encoded using `multipart/form-data`.
+ファイルをアップロードするときは、`multipart/form-data`でエンコードしてください。
 
-This can be combined with arrays as well.
+これは配列と組み合わせることもできます。
 
-## How to use API response data {#responses}
+## APIのレスポンスデータの使用 {#responses}
 
-The Mastodon REST API will return JSON as the response text. It also returns HTTP headers which may be useful in handling the response, as well as an HTTP status code which should let you know how the server handled the request. The following HTTP status codes may be expected:
+Mastodon REST APIはレスポンスとしてJSONを返します。また、レスポンスの処理に役立つ可能性のあるHTTPヘッダーと、サーバが要求を処理した方法を通知するHTTPステータスコードも返します。
 
-* 200 = OK. The request was handled successfully.
-* 4xx = Client error. Your request was not correct. Most commonly, you may see 401 Unauthorized, 404 Not Found, 410 Gone, or 422 Unprocessed.
+* 200 = OK。リクエストは正しくハンドリングされています。
+* 4xx = クライアントエラー。リクエストが正しくありません。401　Unauthorized, 404 Not Found, 410 Gone, 422 Unprocessedをよく見ると思います。
 * 5xx = Server error. Something went wrong while handling the request. Most commonly, you may see 503 Unavailable.
+* 5xx = サーバーエラー。リクエストを処理中に不具合が発生しました。502 Unavailableをよく見ると思います。
 

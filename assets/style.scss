@@ -146,10 +146,9 @@ body {
   }
 
   .sub-title {
-    display: block;
     padding: 10px;
     font-weight: 500;
-    text-transform: uppercase;
+    cursor: pointer;
   }
 
   & > ul a {
@@ -158,9 +157,15 @@ body {
     text-decoration: none;
     font-weight: 500;
     padding: 10px;
+    padding-left: 0;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .sub-menu {
+    list-style: disc;
+    margin-left: 20px;
     a.active {
       color: $vibrant;
     }

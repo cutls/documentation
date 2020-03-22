@@ -1,21 +1,21 @@
 ---
-title: Obtaining client app access
-description: Getting accustomed to the basics of authentication and authorization.
+title: クライアントアプリで認証する
+description: 認証と承認の基本
 menu:
   docs:
     weight: 30
     parent: client
 ---
 
-## Authentication and authorization {#auth}
+## 認証と承認 {#auth}
 
-Up until this point, we've been working with publicly available information, but not all information is public. Some information requires permission before viewing it, in order to audit who is requesting that information \(and to potentially revoke or deny access\).
+これまで、私たちは公開されている情報を扱ってきましたが、すべての情報が公開されているというわけではありません。一部の情報は、その情報を要求しているユーザーを監査する(およびアクセスを取り消すか拒否する可能性がある)ために、表示する前に許可が必要です。
 
-This is where [OAuth]({{< relref "../spec/oauth.md" >}}) comes in. OAuth is a mechanism for generating access tokens which can be used to _authenticate \(verify\)_ that a request is coming from a specific client, and ensure that the requested action is _authorized \(allowed\)_ by the server's access control policies.
+ここで[OAuth]({{< relref "../spec/oauth.md" >}})の出番です。OAuthはアクセストークンを生成するメカニズムです。アクセストークンはリクエストが特定のクライアントからのものであることを _認証(検証)_ し、リクエストされたアクションがサーバーのアクセス制御ポリシーにより _許可(許可）_ されるようにするために使用します。
 
-## Creating our application {#app}
+## アプリケーションの作成 {#app}
 
-The first thing we will need to do is to register an application, in order to be able to generate access tokens later. The application can be created like so:
+まずアプリケーションを登録します。アクセストークンを後に登録できるようにするためです。アプリケーションは以下のようにして作成できます。
 
 ```bash
 curl -X POST \
@@ -26,14 +26,14 @@ curl -X POST \
 	https://mastodon.example/api/v1/apps
 ```
 
-In the above example, we specify the client name and website, which will be shown on statuses if applicable. But more importantly, note the following two parameters:
+上の例において、クライアント名とウェブサイトを指定しています。これは、場合によっては投稿のソースとして開示されます。これらよりも以下のパラメータが重要です。
 
-* `redirect_uris` has been set to the "out of band" token generation, which means that any generated tokens will have to be copied and pasted manually. The parameter is called `redirect_uris` because it is possible to define more than one redirect URI, but when generating the token, we will need to provide a URI that is included within this list.
-* `scopes` allow us to define what permissions we can request later. However, the requested scope later can be a subset of these registered scopes. See [OAuth Scopes](../api/oauth-scopes.md) for more information.
+* `redirect_uris`は「アウトオブバンド」トークン生成として設定されています。これは、生成されたトークンを手動でコピーして貼り付ける必要があるということです。複数のURIを指定できるのでこのパラメータが`redirect_uris`と呼ばれますが、トークンを実際に取得する際にはこのURIのいずれかを提供しなければなりません。
+* `scopes`はどのような権限を要求できるかを指定します。後々リクエストするスコープはここで指定したものだけで構成される必要があります。詳しくは[OAuth Scopes](../api/oauth-scopes.md)を見てください。
 
-We should see an Application entity returned, but for now we only care about client\_id and client\_secret. These values will be used to generate access tokens, so they should be cached for later use. See [POST /api/v1/apps](../methods/apps/#create-an-application) for more details on registering applications.
+Applicationエンティティが返ります。しかし、`client_id`と`client_secret`を取得してそれで終わりというわけではありません。これらは後々アクセストークンを生成するときに使用します。よって保存しておいてください。詳しくは[POST /api/v1/apps](../methods/apps/#create-an-application)を見てください。
 
-## Example authentication code flow {#flow}
+## 認証コード取得の流れ {#flow}
 
 Now that we have an application, let's obtain an access token that will authenticate our requests as that client application. To do so, use [POST /oauth/token](../methods/apps/oauth.md#obtain-a-token) like so:
 

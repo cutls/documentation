@@ -4,7 +4,7 @@ description: ユーザーから承認を取得し、ユーザーに代わって�
 menu:
   docs:
     weight: 40
-    parent: user
+    parent: client
 ---
 
 ## スコープの説明 {#scopes}

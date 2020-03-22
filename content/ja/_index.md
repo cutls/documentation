@@ -1,5 +1,5 @@
 ---
-title: What is Mastodon?
+title: 'What is Mastodon?'
 description: Welcome to the Mastodon documentation!
 menu:
   docs:
