@@ -35,7 +35,7 @@ Applicationエンティティが返ります。しかし、`client_id`と`client
 
 ## 認証コード取得の流れ {#flow}
 
-Now that we have an application, let's obtain an access token that will authenticate our requests as that client application. To do so, use [POST /oauth/token](../methods/apps/oauth.md#obtain-a-token) like so:
+アプリケーションの作成が終わりました。次にクライアントアプリからアクセスできるようにアクセストークンを取得します。以下のうように[POST /oauth/token](../methods/apps/oauth.md#obtain-a-token)を使用します。
 
 ```bash
 curl -X POST \
@@ -46,13 +46,13 @@ curl -X POST \
 	https://mastodon.example/oauth/token
 ```
 
-Note the following:
+注意:
 
-* `client_id` and `client_secret` were provided in the response text when you registered your application.
-* `redirect_uri` must be one of the URIs defined when registering the application.
-* We are requesting a `grant_type` of `client_credentials`, which defaults to giving us the `read` scope.
+* `client_id`と`client_secret`はアプリケーションを登録した時に取得しています。
+* `redirect_uri`はアプリケーションを登録した時に指定したものから1つを選んで使用します。
+* `grant_type`は`client_credentials`を使用します。スコープは`read`となります。
 
-The response of this method is a [Token]({{< relref "../entities/token.md" >}}) entity. We will need the `access_token` value. Once you have the access token, save it in your local cache. To use it in requests, add the HTTP header `Authorization: Bearer ...` to any API call that requires OAuth \(i.e., one that is not publicly accessible\). Let's verify that our obtained credentials are working by calling [GET /api/v1/apps/verify\_credentials](../methods/apps/#verify-your-app-works):
+レスポンスは[Token]({{< relref "../entities/token.md" >}})エンティティとなります。`access_token`値が必要です。一度アクセストークンを取得したら、ローカルに保存してください。OAuthを要求するAPIへリクエストするためには`Authorization: Bearer our_access_token_here`のように指定してください。[GET /api/v1/apps/verify\_credentials](../methods/apps/#verify-your-app-works)にアクセスすると取得した認証情報を検証できます。
 
 ```bash
 curl \
@@ -60,9 +60,8 @@ curl \
 	https://mastodon.example/api/v1/apps/verify_credentials
 ```
 
-If we've obtained our token and formatted our request correctly, we should see our details returned to us as an [Application]({{< relref "../entities/application.md" >}}) entity.
+もしトークンが正しく取得され、リクエスト形式が正しかった場合、[Application]({{< relref "../entities/application.md" >}})エンティティが返されます。
 
-## What we can do with authentication {#methods}
+## 認証情報でできること {#methods}
 
-With our authenticated client application, we can view relations of an account with [GET /api/v1/accounts/:id/following](../methods/accounts/#following) and [GET /api/v1/accounts/:id/followers](../methods/accounts/#followers). Also, some instances may require authentication for methods that would otherwise be public, so if you encountered any authentication errors while playing around with public methods, then those methods should now work.
-
+承認されたクライアントアプリケーションでは、[GET /api/v1/accounts/:id/following](../methods/accounts/#following)や[GET /api/v1/accounts/:id/followers](../methods/accounts/#followers)といったユーザー関係の取得が可能になります。そして。いくつかのインスタンスは公開情報にアクセスするときに認証情報を要求します。もし公開情報取得でエラーに遭遇した場合、認証情報を付けてリクエストし直すと取得できるようになるかもしれません。
