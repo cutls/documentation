@@ -1,12 +1,12 @@
 ---
 title: Account
-description: Represents a user of Mastodon and their associated profile.
+description: Mastodonのユーザーとその関連プロフィールに関する情報
 menu:
   docs:
     parent: entities
 ---
 
-## Example
+## 例
 
 ```javascript
 {
@@ -72,144 +72,144 @@ menu:
 }
 ```
 
-## Base attributes
+## 基本の属性
 
 ### **`id`** {#id}
 
-**Description:** The account id`header`.\
-**Type:** String \(cast from an integer, but not guaranteed to be a number\)\
+**Description:** アカウントのID\
+**Type:** String \(整数からキャストされますが、数値であるとは限りません\)\
 **Version history:** Added in 0.1.0
 
 ### `username` {#username}
 
-**Description:** The username of the account, not including domain.\
+**Description:** ドメイン(@以降)を含まないユーザーネーム\
 **Type:** String\
 **Version history:** Added in 0.1.0
 
 ### `acct` {#acct}
 
-**Description:** The Webfinger account URI.
-Equal to `username` for local users, or `username@domain` for remote users.\
+**Description:** WebfingerのアカウントURL
+ローカルユーザーは`username`と同じで、リモートユーザーは`username@domain`\
 **Type:** String\
 **Version history:** Added in 0.1.0
 
 ### `url` {#url}
 
-**Description:** The location of the user's profile page.\
+**Description:** ユーザーの公開プロフィールのURL\
 **Type:** String \(HTTPS URL\)\
 **Version history:** Added in 0.1.0
 
-## Display attributes
+## 表示に関する属性
 
 ### `display_name` {#display_name}
 
-**Description:** The profile's display name.\
+**Description:** プロフィールの表示名\
 **Type:** String\
 **Version history:** Added in 0.1.0
 
 ### `note` {#note}
 
-**Description:** The profile's bio / description.\
+**Description:** プロフィールの自己紹介\
 **Type:** String \(HTML\)\
 **Version history:** Added in 0.1.0
 
 ### `avatar` {#avatar}
 
-**Description:** An image icon that is shown next to statuses and in the profile.\
+**Description:** プロフィールや、投稿の隣に出るアイコン\
 **Type:** String \(URL\)\
 **Version history:** Added in 0.1.0
 
 ### `avatar_static` {#avatar_static}
 
-**Description:** A static version of the avatar.
-Equal to `avatar` if its value is a static image; different if `avatar` is an animated GIF.\
+**Description:** `avatar`の静止画版\
+`avatar`が静止画の場合、`avatar`と同等。GIFアニメの場合は異なります。\
 **Type:** String \(URL\)\
 **Version history:** Added in 1.1.2
 
 ### `header` {#header}
 
-**Description:** An image banner that is shown above the profile and in profile cards.\
+**Description:** プロフィールの上部やプロフィールカードに使用されるバナー画像¥\
 **Type:** String \(URL\)\
 **Version history:** Added in 0.1.0
 
 ### `header_static` {#header_static}
 
-**Description:** A static version of the header.
-Equal to `header` if its value is a static image; different if `header` is an animated GIF.\
+**Description:** `header`の静止画版\
+`header`が静止画の場合、`header`と同等。GIFアニメの場合は異なります。\
 **Type:** String \(URL\)\
 **Version history:** Added in 1.1.2
 
 ### `locked` {#locked}
 
-**Description:** Whether the account manually approves follow requests.\
+**Description:** フォローを承認制にしているかどうか\
 **Type:** Boolean\
 **Version history:** Added in 0.1.0
 
 ### `emojis` {#emojis}
 
-**Description:** Custom emoji entities to be used when rendering the profile. If none, an empty array will be returned.\
+**Description:** プロフィールをレンダリングするときに必要なカスタム絵文字の情報。無い場合は空の配列。\
 **Type:** Array of [Emoji](emoji.md)\
 **Version history:** Added in 2.4.0
 
 ### `discoverable` {#discoverable}
 
-**Description:** Whether the account has opted into discovery features such as the profile directory.\
+**Description:** アカウントがディレクトリ(オプトイン方式)に掲載されているかどうか。\
 **Type:** Boolean\
 **Version history:** Added in 3.1.0
 
-## Statistical attributes 
+## 統計的な属性
 
 ### `created_at` {#created_at}
 
-**Description:** When the account was created.\
+**Description:** アカウントの作成日時\
 **Type:** String \(ISO 8601 Datetime\)\
 **Version history:** Added in 0.1.0
 
 ### `statuses_count` {#statuses_count}
 
-**Description:** How many statuses are attached to this account.\
+**Description:** 投稿総数\
 **Type:** Number\
 **Version history:** Added in 0.1.0
 
 ### `followers_count` {#followers_count}
 
-**Description:** The reported followers of this profile.\
+**Description:** フォロワーの数.\
 **Type:** Number\
 **Version history:** Added in 0.1.0
 
 ### `following_count` {#following_count}
 
-**Description:** The reported follows of this profile.\
+**Description:** フォロー数\
 **Type:** Number\
 **Version history:** Added in 0.1.0
 
-## Optional attributes
+## 追加の属性
 
 ### `moved` {#moved}
 
-**Description:** Indicates that the profile is currently inactive and that its user has moved to a new account.\
+**Description:** そのプロフィールがアクティブ状態でなく、新しい別のアカウントに引っ越した場合、その引越し先。\
 **Type:** [Account](account.md)\
 **Version history:** Added in 2.1.0
 
 ### `fields` {#fields}
 
-**Description:** Additional metadata attached to a profile as name-value pairs.\
+**Description:** 名前-内容 ペアのプロフィールに対する追加情報\
 **Type:** Array of [Field]({{< relref "field.md" >}})\
 **Version history:** Added in 2.4.0
 
 ### `bot` {#bot}
 
-**Description:** A presentational flag. Indicates that the account may perform automated actions, may not be monitored, or identifies as a robot.\
+**Description:** 表現上のフラグ。アカウントの動作が自動化されている場合に`true`\
 **Type:** Boolean\
 **Version history:** Added in 2.4.0
 
 ### `source` {#source}
 
-**Description:** An extra entity to be used with API methods to [verify credentials](../methods/accounts/#verify-account-credentials) and [update credentials](../methods/accounts/#update-account-credentials).\
+**Description:** [verify credentials](../methods/accounts/#verify-account-credentials)と[update credentials](../methods/accounts/#update-account-credentials)の時のみ付与される追加情報。\
 **Type:** [Source](source.md)\
 **Version history:** Added in 2.4.0
 
-## See also
+## 他に
 
 {{< page-ref page="methods/accounts.md" >}}
 

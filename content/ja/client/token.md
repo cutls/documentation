@@ -28,14 +28,14 @@ curl -X POST \
 
 上の例において、クライアント名とウェブサイトを指定しています。これは、場合によっては投稿のソースとして開示されます。これらよりも以下のパラメータが重要です。
 
-* `redirect_uris`は「アウトオブバンド」トークン生成として設定されています。これは、生成されたトークンを手動でコピーして貼り付ける必要があるということです。複数のURIを指定できるのでこのパラメータが`redirect_uris`と呼ばれますが、トークンを実際に取得する際にはこのURIのいずれかを提供しなければなりません。
+* `redirect_uris`は「アウトオブバンド」トークン生成として設定されています。これは、生成されたトークンを手動でコピーして貼り付ける方法です。`redirect_uris`と呼ばれる通り、複数のURIを指定できます。トークンを実際に取得する際にはこのURIのいずれかを提供しなければなりません。
 * `scopes`はどのような権限を要求できるかを指定します。後々リクエストするスコープはここで指定したものだけで構成される必要があります。詳しくは[OAuth Scopes](../api/oauth-scopes.md)を見てください。
 
 Applicationエンティティが返ります。しかし、`client_id`と`client_secret`を取得してそれで終わりというわけではありません。これらは後々アクセストークンを生成するときに使用します。よって保存しておいてください。詳しくは[POST /api/v1/apps](../methods/apps/#create-an-application)を見てください。
 
 ## 認証コード取得の流れ {#flow}
 
-アプリケーションの作成が終わりました。次にクライアントアプリからアクセスできるようにアクセストークンを取得します。以下のうように[POST /oauth/token](../methods/apps/oauth.md#obtain-a-token)を使用します。
+アプリケーションの作成が終わりました。次にクライアントアプリからアクセスできるようにアクセストークンを取得します。以下のように[POST /oauth/token](../methods/apps/oauth.md#obtain-a-token)を使用します。
 
 ```bash
 curl -X POST \
@@ -50,7 +50,7 @@ curl -X POST \
 
 * `client_id`と`client_secret`はアプリケーションを登録した時に取得しています。
 * `redirect_uri`はアプリケーションを登録した時に指定したものから1つを選んで使用します。
-* `grant_type`は`client_credentials`を使用します。スコープは`read`となります。
+* 今回、`grant_type`は`client_credentials`を使用します。スコープは`read`となります。
 
 レスポンスは[Token]({{< relref "../entities/token.md" >}})エンティティとなります。`access_token`値が必要です。一度アクセストークンを取得したら、ローカルに保存してください。OAuthを要求するAPIへリクエストするためには`Authorization: Bearer our_access_token_here`のように指定してください。[GET /api/v1/apps/verify\_credentials](../methods/apps/#verify-your-app-works)にアクセスすると取得した認証情報を検証できます。
 
@@ -64,4 +64,4 @@ curl \
 
 ## 認証情報でできること {#methods}
 
-承認されたクライアントアプリケーションでは、[GET /api/v1/accounts/:id/following](../methods/accounts/#following)や[GET /api/v1/accounts/:id/followers](../methods/accounts/#followers)といったユーザー関係の取得が可能になります。そして。いくつかのインスタンスは公開情報にアクセスするときに認証情報を要求します。もし公開情報取得でエラーに遭遇した場合、認証情報を付けてリクエストし直すと取得できるようになるかもしれません。
+承認されたクライアントアプリケーションでは、[GET /api/v1/accounts/:id/following](../methods/accounts/#following)や[GET /api/v1/accounts/:id/followers](../methods/accounts/#followers)といったユーザー関係の取得が可能になります。また、いくつかのインスタンスは公開情報にアクセスするときに認証情報を要求します。もし公開情報取得でエラーに遭遇した場合、認証情報を付けてリクエストし直すと取得できるようになるかもしれません。

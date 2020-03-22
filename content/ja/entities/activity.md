@@ -1,12 +1,12 @@
 ---
 title: Activity
-description: Represents a weekly bucket of instance activity.
+description: インスタンスアクティビティの毎週のバケット情報
 menu:
   docs:
     parent: entities
 ---
 
-## Example
+## 例
 
 ```javascript
 {
@@ -17,33 +17,33 @@ menu:
 }
 ```
 
-## Attributes
+## 属性
 
 ### `week` {#week}
 
-**Description:** Midnight at the first day of the week.\
+**Description:** 週の最初の日の0:00のタイムスタンプ\
 **Type:** String \(UNIX Timestamp\)\
 **Version history:** Added in 2.1.2
 
 ### `statuses` {#statuses}
 
-**Description:** Statuses created since the week began.\
-**Type:** String \(cast from an integer\)\
+**Description:** 週が始まってからの投稿総数\
+**Type:** String \(整数からのキャスト\)\
 **Version history:** Added in 2.1.2
 
 ### `logins` {#logins}
 
-**Description:** User logins since the week began.\
-**Type:** String \(cast from an integer\)\
+**Description:** 週が始まってからのユーザーのログイン数\
+**Type:** String \(整数からのキャスト\)\
 **Version history:** Added in 2.1.2
 
 ### `registrations` {#registrations}
 
-**Description:** User registrations since the week began.\
-**Type:** String \(cast from an integer\)\
+**Description:** 週が始まってからの新規登録者数\
+**Type:** String \(整数からのキャスト\)\
 **Version history:** Added in 2.1.2
 
-## See also
+## 他に
 
 * [GET /api/v1/instance/activity](../methods/instance/#weekly-activity)
 

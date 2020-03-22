@@ -1,18 +1,22 @@
 ---
 title: Admin::Report
-description: Admin-level information about a filed report.
+description: 通報に関する管理者レベルの情報
 menu:
   docs:
     parent: entities
 ---
 
-## Example
+{{< hint style="danger" >}}
+未完成です。
+{{< /hint >}}
+
+## 例
 
 ```javascript
 {}
 ```
 
-## Attributes
+## 属性
 
 ### `id` {#id}
 
