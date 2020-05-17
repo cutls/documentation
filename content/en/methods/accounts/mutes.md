@@ -12,11 +12,11 @@ menu:
 
 Accounts the user has muted.
 
-**Returns:** Array of Account\
+**戻り値:** Array of Account\
 **OAuth:** User token + `read:mutes` or `follow`\
-**Version history:**
+**実装履歴:**
 
-- 0.0.0 - added
+- 0.0.0 - 追加
 
 {{< endapi-method-description >}}
 {{< api-method-spec >}}

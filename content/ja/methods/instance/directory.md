@@ -12,11 +12,11 @@ menu:
 
 List accounts visible in the directory.
 
-**Returns:** Array of Account\
+**戻り値:** Array of Account\
 **OAuth:** Public\
-**Version history:**
+**実装履歴:**
 
-- 3.0.0 - added
+- 3.0.0 - 追加
 
 {{< endapi-method-description >}}
 {{< api-method-spec >}}

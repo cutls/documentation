@@ -10,7 +10,7 @@ menu:
 {{< api-method method="get" host="" path="/api/v1/blocks" title="Blocked users" >}}
 {{< api-method-description >}}
 
-**返り値:** Accountの配列\
+**戻り値:** Accountの配列\
 **OAuth:** User token + `read:blocks`\
 **実装履歴:**
 

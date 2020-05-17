@@ -12,7 +12,7 @@ menu:
 
 現在そのユーザーがプロフィールに紹介しているアカウント
 
-**返り値:** Accountの配列\
+**戻り値:** Accountの配列\
 **OAuth:** User token + `read:accounts`\
 **実装履歴:**
 

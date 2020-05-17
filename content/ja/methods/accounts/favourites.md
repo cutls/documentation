@@ -12,7 +12,7 @@ menu:
 
 お気に入り登録をしたトゥート
 
-**返り値:** Statusの配列\
+**戻り値:** Statusの配列\
 **OAuth:** User token + `read:favourites`\
 **実装履歴:**
 

@@ -12,7 +12,7 @@ menu:
 
 ユーザーがブロックしたドメイン
 
-**返り値:** 文字列の配列\
+**戻り値:** 文字列の配列\
 **OAuth:** User token + `read:blocks` or `follow`\
 **実装履歴:**
 
@@ -78,7 +78,7 @@ Incorrect Authorization header
 - そのドメインのユーザーからのフォローを解除します
 - そのドメインのユーザーはフォローできません\(ただし既存のフォローは解除されません\)
 
-**返り値:** n/a\
+**戻り値:** n/a\
 **OAuth:** User token + ****`write:blocks` or `follow`\
 **実装履歴:**
 
@@ -156,7 +156,7 @@ If `domain` is not provided or contains spaces, the request will fail.
 
 すでに存在しているドメインブロックを解除する。
 
-**返り値:** n/a\
+**戻り値:** n/a\
 **OAuth:** User token + ****`write:blocks` or `follow`\
 **実装履歴:**
 

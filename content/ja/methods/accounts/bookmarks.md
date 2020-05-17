@@ -12,7 +12,7 @@ menu:
 
 ユーザーがブックマークしたトゥート
 
-**返り値:** Statusの配列\
+**戻り値:** Statusの配列\
 **OAuth:** User token + `read:bookmarks`\
 **実装履歴:**
 

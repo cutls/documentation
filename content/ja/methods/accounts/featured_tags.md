@@ -10,7 +10,7 @@ menu:
 {{< api-method method="get" host="https://mastodon.example" path="/api/v1/featured_tags" title="View your featured tags" >}}
 {{< api-method-description >}}
 
-**返り値:**FeaturedTagの配列\
+**戻り値:**FeaturedTagの配列\
 **OAuth:** User token + `read:accounts`\
 **実装履歴:**
 
@@ -61,7 +61,7 @@ Invalid or missing Authorization header
 {{< api-method method="post" host="https://mastodon.example" path="/api/v1/featured_tags" title="Feature a tag" >}}
 {{< api-method-description >}}
 
-**返り値:** FeaturedTag\
+**戻り値:** FeaturedTag\
 **OAuth:** User token + `write:accounts`\
 **実装履歴:**
 
@@ -117,7 +117,7 @@ FeaturedTagはある特定の`name`を付けて作成されます。
 {{< api-method method="delete" host="https://mastodon.example" path="/api/v1/featured_tags/:id" title="Unfeature a tag" >}}
 {{< api-method-description >}}
 
-**返り値:** 空のオブジェクト\
+**戻り値:** 空のオブジェクト\
 **OAuth:** User token + `write:accounts`\
 **実装履歴:**
 
@@ -170,7 +170,7 @@ If the ID does not exist or is not owned by you
 
 Shows your 10 most-used tags, with usage history for the past week.
 
-**返り値:** Array of Tag with History\
+**戻り値:** Array of Tag with History\
 **OAuth:** User token + `read:accounts`\
 **実装履歴:**
 

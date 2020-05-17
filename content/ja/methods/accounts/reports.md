@@ -9,15 +9,15 @@ menu:
 
 {{< hint style="warning" >}}
 
-Responses are not currently documented.
+レスポンスのドキュメントは準備中です
 {{< /hint >}}
 {{< api-method method="post" host="https://mastodon.example" path="/api/v1/reports" title="File a report" >}}
 {{< api-method-description >}}
 
-**Returns:** Report\
+**戻り値:** Report\
 **OAuth:** User token + `write:reports`\
-**Version history:**\
-1.1 - added
+**実装履歴:**\
+1.1 - 追加
 - 2.3.0 - add `forward` parameter
 
 {{< endapi-method-description >}}

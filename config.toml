@@ -1,5 +1,5 @@
 baseURL = "https://new.docs.toot.app/"
-languageCode = "en-us"
+languageCode = "ja-jp"
 defaultContentLanguage = "ja"
 title = "Mastodon documentation"
 pygmentsCodeFences = true
@@ -10,27 +10,27 @@ enableGitInfo = true
 
 [menu]
   [[menu.docs]]
-    name = "Using Mastodon"
+    name = "Mastodonの使い方"
     weight = 10
     identifier = "user"
     url = "/user/"
   [[menu.docs]]
-    name = "Running Mastodon"
+    name = "Mastodonの構築"
     weight = 20
     identifier = "admin"
     url = "/admin/"
   [[menu.docs]]
-    name = "Developing Mastodon apps"
+    name = "アプリケーションの開発"
     weight = 30
     identifier = "client"
     url = "/client/"
   [[menu.docs]]
-    name = "Contributing to Mastodon"
+    name = "コントリビューション"
     weight = 40
     identifier = "dev"
     url = "/dev/"
   [[menu.docs]]
-    name = "Spec compliance"
+    name = "スペック"
     weight = 50
     identifier = "spec"
     url = "/spec/"
@@ -40,12 +40,12 @@ enableGitInfo = true
     identifier = "api"
     url = "/api/"
   [[menu.docs]]
-    name = "API Methods"
+    name = "API一覧"
     weight = 70
     identifier = "methods"
     url = "/methods/"
   [[menu.docs]]
-    name = "API Entities"
+    name = "APIエンティティ"
     weight = 80
     identifier = "entities"
     url = "/entities/"
@@ -55,6 +55,48 @@ enableGitInfo = true
     contentDir = "content/en"
     languageName = "English"
     weight = -99
+    [languages.en.menu]
+      [[languages.en.menu.docs]]
+        name = "Using Mastodon"
+        weight = 10
+        identifier = "user"
+        url = "/user/"
+      [[languages.en.menu.docs]]
+        name = "Running Mastodon"
+        weight = 20
+        identifier = "admin"
+        url = "/admin/"
+      [[languages.en.menu.docs]]
+        name = "Developing Mastodon apps"
+        weight = 30
+        identifier = "client"
+        url = "/client/"
+      [[languages.en.menu.docs]]
+        name = "Contributing to Mastodon"
+        weight = 40
+        identifier = "dev"
+        url = "/dev/"
+      [[languages.en.menu.docs]]
+        name = "Spec compliance"
+        weight = 50
+        identifier = "spec"
+        url = "/spec/"
+      [[languages.en.menu.docs]]
+        name = "REST API"
+        weight = 60
+        identifier = "api"
+        url = "/api/"
+      [[languages.en.menu.docs]]
+        name = "API Methods"
+        weight = 70
+        identifier = "methods"
+        url = "/methods/"
+      [[languages.en.menu.docs]]
+        name = "API Entities"
+        weight = 80
+        identifier = "entities"
+        url = "/entities/"
+
   [languages.ja]
     contentDir = "content/ja"
     languageName = "日本語"

@@ -14,11 +14,11 @@ menu:
 
 Returns custom emojis that are available on the server.
 
-**Returns:** Array of Emoji\
+**戻り値:** Array of Emoji\
 **OAuth:** Public\
-**Version history:**
+**実装履歴:**
 
-- 2.0.0 - added
+- 2.0.0 - 追加
 - 3.0.0 - optional `category` added to response
 
 {{< endapi-method-description >}}
