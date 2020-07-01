@@ -1,6 +1,6 @@
 ---
 title: domain_blocks
-description: View and update domain blocks.
+description: ドメインブロックの追加と更新
 menu:
   docs:
     weight: 50

@@ -1,6 +1,6 @@
 ---
 title: featured_tags
-description: Feature tags that you use frequently.
+description: よく使うタグの登録
 menu:
   docs:
     weight: 100

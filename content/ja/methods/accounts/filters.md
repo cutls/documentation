@@ -1,6 +1,6 @@
 ---
 title: filters
-description: Create and manage filters.
+description: フィルターの追加と管理
 menu:
   docs:
     weight: 60

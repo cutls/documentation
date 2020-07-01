@@ -1,6 +1,6 @@
 ---
 title: bookmarks
-description: 'View your bookmarks. See also statuses/:id/{bookmark,unbookmark}'
+description: '自分のブックマーク; 参照:statuses/:id/{bookmark,unbookmark}'
 menu:
   docs:
     weight: 10

@@ -1,6 +1,6 @@
 ---
 title: endorsements
-description: 'Feature other profiles on your own profile. See also accounts/:id/{pin,unpin}'
+description: 'プロフィールに他のユーザーを紹介します。参照: accounts/:id/{pin,unpin}'
 menu:
   docs:
     weight: 90

@@ -1,6 +1,6 @@
 ---
 title: favourites
-description: 'View your favourites. See also statuses/:id/{favourite,unfavourite}'
+description: 'お気に入りした投稿を見る。参照: statuses/:id/{favourite,unfavourite}'
 menu:
   docs:
     weight: 20

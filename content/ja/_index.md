@@ -1,6 +1,6 @@
 ---
-title: What is Mastodon?
-description: Welcome to the Mastodon documentation!
+title: Mastodonとは？
+description: Mastodonドキュメントへようこそ
 menu:
   docs:
     weight: -99
@@ -8,46 +8,49 @@ menu:
 
 {{< youtube id="IPSbNdBmWKE" caption="An introductory video explaining basic Mastodon concepts with visual animations" >}}
 
-## What is a microblog? {#microblogging}
+## マイクロブログとは？ {#microblogging}
 
-Similar to how blogging is the act of publishing updates to a website, **microblogging** is the act of publishing small updates to a stream of updates on your profile. You can publish text posts and optionally attach media such as pictures, audio, video, or polls. Mastodon lets you follow friends and discover new ones.
+Webサイトを更新するという形でブログを書くっていうのに似ていますが、**マイクロブログ**は小さなコンテンツを更新することであなたのプロフィールを更新していくという仕組みのサービスです。
 
-## What is federation? {#federation}
+## 連合とは？ {#federation}
 
-**Federation** is a form of decentralization. Instead of a single central service that all people use, there are multiple services, that any number of people can use.
-
-| Grade of centralization | Examples |
-| :--- | :--- |
-| Centralized | Twitter, Facebook, Instagram |
-| Federated | Email, XMPP, phone networks, physical mail |
-| Distributed | BitTorrent, IPFS, Scuttlebutt |
-
-A Mastodon website can operate alone. Just like a traditional website, people sign up on it, post messages, upload pictures and talk to each other. _Unlike_ a traditional website, Mastodon websites can interoperate, letting their users communicate with each other; just like you can send an email from your Gmail account to someone from Outlook, Fastmail, Protonmail, or any other email provider, as long as you know their email address, **you can mention or message anyone on any website using their address**.
-
-{{< figure src="/assets/image%20%289%29.png" caption="From left to right: Centralized, Federated, Distributed" >}}
+**連合**は脱中央集権化の一つの形です。一つのサービスが中心になりそれをみんなで使うことの代わりに、複数のサービスを存在させ、誰でも、何人でも使えるようにするものです。
 
 
+|分類|サービス例|
+|:---------------------:|--------|
+|中央集権的|Twitter, Facebook, Instagram|
+|連合的|E-mail, XMPP, 電話網, 郵便|
+|分散的|BitTorrent, IPFS, Scuttlebutt|
 
-## What is ActivityPub? {#fediverse}
+Mastodonはそれぞれ独立して存在できます。これは昔のウェブサイトでも同様で、ある人が登録し、メッセージを投稿したり画像を投稿したりしておしゃべりを楽しむことができます。しかし、_従来のウェブサイトと異なって_ 複数のMastodonサーバーは各々相互にデータを送受信し、別々のサーバーに登録した人同士で会話できます。これは、Gmailのメールアドレス(gmail.com)からOutlook(outlook.jp)やYahoo!メール(yahoo.co.jp)、ドコモメール(docomo.ne.jp)をはじめあらゆるメールプロバイダにメールを送信できます。**そのアドレスを所有しているいかなるウェブサイトのいかなる人にもメッセージを送りことができます。**
 
-Mastodon uses a standardized, open protocol to implement federation. It is called **ActivityPub**. Any software that likewise implements federation via ActivityPub can seamlessly communicate with Mastodon, just like Mastodon websites communicate with one another.
+{{< figure src="/assets/image%20%289%29.png" caption="左から中央集権、連合、分散" >}}
 
-The **fediverse** \(“federated universe”\) is the name for all websites that can communicate with each other over ActivityPub and the World Wide Web. That includes all Mastodon servers, but also other implementations:
 
-* Pleroma, a modular microblogging engine,
-* Pixelfed, which lets you share and consume media posts,
-* Misskey, which includes microblogging alongside a customizable dashboard,
-* PeerTube, which lets you upload videos to channels,
-* Plume, which lets you publish longer-form articles,
-* and many more, including individual and personal websites!
+
+## ActivityPubとは？ {#fediverse}
+
+Mastodonは標準化されたオープンな規格である**ActivityPub**を用います。他のActivityPubをサポートするソフトウェアは他のMastodonサーバーと通信できるように、シームレスに通信できます。
+
+これこそが**Fedeverse**(連合する *federated* 宇宙*universe*)です。FediverseとはActivityPubやWWW上でお互いにコミュニケーションを行えるすべてのウェブサイトの総称です。これにはMastodonサーバも含まれますが、他にも様々な実装があります。
+
+
+* Pleroma, モジュラー型マイクロブログサービス
+* Pixelfed, メディア共有型サービス
+* Misskey, マイクロブログと並行してカスタマイズできるダッシュボードを備えたもの
+* PeerTube, 動画をチャンネルに投稿できる
+* Plume, 長文を投稿できる
+* 個人的なサービスを含めると、ほかにもたくさんあります。
 
 The fediverse does not have its own brand, so you might more often hear “follow me on Mastodon” than “follow me on the fediverse”, but technically the latter is more correct.
+Fediverseはそれ自身のブランドを持っていません。なので、「Mastoodonでフォローして」というより「Fediverseでフォローして」と言った方が技術的には正しいのですが、実際には前者の方がよく聞くと思います。
 
-## Practical implications {#implications}
+## 実践的な話 {#implications}
 
-### Choice of service provider and policy {#choice}
+### サーバー選びとそのポリシー {#choice}
 
-Because Mastodon is simply software that can be used to power any website, potential users of Mastodon have the option of choosing a service provider from already-existing Mastodon websites, or to create their own Mastodon website if they wish. The Mastodon project maintains a list of recommended service providers at [joinmastodon.org](https://joinmastodon.org), sortable by category and/or language. Some websites may have moderation policies that go beyond this, such as requiring the use of certain tags on potentially sensitive content, and some websites may have more relaxed moderation policies, but websites listed in the picker all agree to adopt the [Mastodon Server Covenant](https://joinmastodon.org/covenant), meaning that they pledge to actively moderate against hate speech, to take daily backups, to have at least one emergency admin, and to provide at least 3 months advance notice in case of shutdown.
+自分で新しいサーバーを建てるかという選択をします。Mastodonプロジェクトは推奨されるサーバーの一覧を[joinmastodon.org](https://joinmastodon.org)で公開していて、言語やカテゴリでソートできるようになっています。一部のサーバーは推奨より厳しいモデレーションポリシーを持っています。例えば、潜在的に危険なコンテンツには特定のタグをつけることを要請していたりします。一方で、推奨より緩いモデレーションポリシーを持つものもあります。しかし、[joinmastodon.org](https://joinmastodon.org)上の推奨サーバーは全て[Mastodon Server Covenant](https://joinmastodon.org/covenant)に準拠しています。これは、ヘイトスピーチに反対することを宣誓し、日常的にバックアップをとったり緊急時に管理者を最低一人用意したり、閉鎖3か月前には告知するなどを規定しています。
 
 > Maintaining communities that feel safe for all of its members is not easy. Mastodon provides a lot of foundational framework and tools for doing it, and shifts the power to effect change from one commercial entity to the communities themselves.
 >
@@ -57,29 +60,29 @@ Because Mastodon is simply software that can be used to power any website, poten
 >
 > -- Eugen Rochko, Dec 30 2018, ["Why does decentralization matter?"](https://blog.joinmastodon.org/2018/12/why-does-decentralization-matter/)
 
-### Funding and monetization {#monetization}
+### 資金調達と収益化 {#monetization}
 
-Mastodon websites are operated by different people or organizations completely independently. Mastodon does not implement any monetization strategies in the software.
+すべてのMastodonサーバーは完全に独立した個々の人間や組織が運営しています。Mastodonはいかなる収益モデルをソフトウェアとして実装していません。
 
-Some server operators choose to offer paid accounts, some server operators are companies who can utilize their existing infrastructure, some server operators rely on crowdfunding from their users via Patreon and similar services, and some server operators are just paying out-of-pocket for a personal server for themselves and maybe some friends. So if you want to support the server hosting your account, check if it offers a way to donate.
+一部のサーバーは有料アカウントを提供しています。一部の大企業がホストするサーバーは既存のインフラストラクチャーの上に成立させ収益モデルの一環として無償提供しています。しかし、ほとんどのサーバー管理者はPatreon、Pixiv FANBOX、Fantiaなどのサービスを介してユーザーからのクラウドファンディングに依存しています。一部の管理者は、自分自身とおそらく一部の友人のためにサーバーに自己負担しているにすぎません。もし自分のいるサーバーを金銭的に支援したい場合、寄付や支援の方法をチェックしてみましょう。
 
-Mastodon development is likewise crowdfunded via [Patreon](https://patreon.com/mastodon) and via [OpenCollective](https://opencollective.com/mastodon). **No venture capital is involved.**
+Mastodonの開発は[Patreon](https://patreon.com/mastodon)または[OpenCollective](https://opencollective.com/mastodon)を用いたクラウドファンディングで資金を調達しています。**一切のベンチャーキャピタルは関与していません。**
 
 > In my opinion, “instant, public, global messaging and conversation” should, in fact, be _global_. Distributed between independent organizations and actors who can self-govern. A public utility, without incentives to exploit the conversations for profit.
 >
 > -- Eugen Rochko, Mar 3 2018, ["Twitter is not a public utility"](https://blog.joinmastodon.org/2018/03/twitter-is-not-a-public-utility/)
 
-### Interoperability between different software {#interoperability}
+### 他のソフトウェアとの相互運用性 {#interoperability}
 
-In practical terms: Imagine if you could follow an Instagram user from your Twitter account and comment on their photos without leaving your account. If Twitter and Instagram were federated services that used the same protocol, that would be possible. With a Mastodon account, **you can communicate with any other compatible website,** _**even if it is not running on Mastodon**_. All that is necessary is that the software support the same subset of the ActivityPub protocol that allows for creating and interacting with status updates. To find out more about the technical specifications required to interoperate with Mastodon, see [ActivityPub](spec/activitypub.md), [WebFinger](spec/webfinger.md), and [Security](spec/security.md). To read more about what ActivityPub allows us to do, see [Why ActivityPub is the future](https://blog.joinmastodon.org/2018/06/why-activitypub-is-the-future/).
+例えば、もしTwitterアカウントからInstagramのユーザーをフォローして、そこからコメントできたら…。TwitterとInstagramがもし連合サービスで同じプロトコルを使っていれば、可能かもしれません。Mastodonアカウントでは**他の互換性のあるサーバーと相互に通信できます。それが例えMastodonでなくとも。**そのソフトウェアがActivityPubプロトコルで投稿をしたり確認できたりするのと同じサブセットをサポートしてさえいればいいのです。Mastodonとの相互運用性についての技術的な話は、[ActivityPub](spec/activitypub.md)、[WebFinger](spec/webfinger.md)、[Security](spec/security.md)を見てください。
 
 > All of these platforms are different and they focus on different needs. And yet, the foundation is all the same: people subscribing to receive posts from other people. And so, they are all compatible.
 >
 > -- Eugen Rochko, Jun 27 2018, ["Why ActivityPub is the future"](https://blog.joinmastodon.org/2018/06/why-activitypub-is-the-future/)
 
-### Free/libre software {#libre}
+### 無料で自由なソフトウェア {#libre}
 
-Unlike proprietary services, **anyone has the complete freedom to run, examine, inspect, copy, modify, distribute, and reuse the Mastodon source code, provided they guarantee the same freedoms for any derivative work.** Just like how users of Mastodon can choose their service provider, you as an individual are free to contribute features to Mastodon or publish a modified version of Mastodon that includes different features. These modified versions, also known as software forks, are required to also uphold the same freedoms as the original Mastodon project. For example, [glitch-soc](https://glitch-soc.github.io/docs/) is a software distribution that adds various experimental features. Many individual forks exist as well, perhaps themed slightly differently or including small modifications to the codebase. Because Mastodon is libre software that respects your freedom, personalizations like this are not only allowed but encouraged.
+プロプライエタリなサービスとは違って、**誰でも、完全に自由にmastodonのソースコードを実行、試験、検証、コピー、修正、頒布、再利用することができます。ただ、誰でも派生物と同じ自由を保証するものでなければなりません。** Mastodonのユーザーがサービスプロバイダを選ぶのと一緒で、個人的に自由にMastodonに機能を提供し、または違う機能を持ったMastodonの別バージョンを作ったりすることができます。このような別バージョンは一般にフォークと呼ばれますが、フォークソフトウェアもオリジナルなMastodonプロジェクトと同様の自由を保証しなければなりません。例えば、[glitch-soc](https://glitch-soc.github.io/docs/)は様々な実験的機能を備えたフォークがあります。他にも多くの個人がフォークしていて、それらは小さなテーマ変更だったりコード変更だったりします。Mastodonは自由ソフトウェアで、自由を尊重するので、このような個人化は許可されるだけでなく奨励されます。
 
 > The ultimate power is in giving people the ability to create their own spaces, their own communities, to modify the software as they see fit, but without sacrificing the ability of people from different communities to interact with each other.
 >
@@ -89,21 +92,21 @@ Unlike proprietary services, **anyone has the complete freedom to run, examine, 
 >
 > -- Eugen Rochko, Dec 30 2018, ["Why does decentralization matter?"](https://blog.joinmastodon.org/2018/12/why-does-decentralization-matter/)
 
-## Choose your path {#next-steps}
+## 次のステップ {#next-steps}
 
-Learn how to use Mastodon:
+Mastodonの使い方
 
 {{< page-ref page="user/signup.md" >}}
 
-Learn how to install Mastodon:
+Mastodonを建てる
 
 {{< page-ref page="admin/prerequisites.md" >}}
 
-Learn how to write an app for Mastodon:
+Mastodonアプリを作る
 
 {{< page-ref page="client/intro.md" >}}
 
-Learn about the Mastodon backend and how to contribute:
+Mastodonのバックエンドとコントリビューションについて学ぶ
 
 {{< page-ref page="dev/overview.md" >}}
 

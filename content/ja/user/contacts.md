@@ -1,17 +1,18 @@
 ---
-title: More settings
-description: Invite new users, sort through your contacts, and secure your account.
+title: その他の設定
+description: 他のユーザーを招待したり、フォローを整理したり、アカウントのセキュリティを向上させたり…
 menu:
   docs:
     weight: 80
     parent: user
 ---
 
-## Generating invites {#invites}
+## 招待を作成 {#invites}
 
-{{< figure src="/assets/image%20%2862%29.png" caption="Invite people from your account&apos;s settings" >}}
+{{< figure src="/assets/image%20%2862%29.png" caption="アカウント設定から招待を作成" >}}
 
-Invite links can be generated and shared with other people, and some servers require invites in order to register for an account. When generating an invite link, you can set the max uses to limit how many times a certain link is used, or how long it has been active. Invite links can be deactivated at any time.
+招待リンクを作成して他の人とシェアしましょう。一部のサーバは登録するのに招待を必要とします。招待リンクを作成する差異には、使用回数に制限をかけたり、
+有効期限を設定できたりします。招待リンクはいつでも無効化できます。
 
 ## Follows and followers {#relationships}
 

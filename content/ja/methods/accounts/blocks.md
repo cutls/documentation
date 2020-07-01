@@ -1,6 +1,6 @@
 ---
 title: blocks
-description: 'View your blocks. See also accounts/:id/{block,unblock}'
+description: 'ブロックしたアカウント; 参照: accounts/:id/{block,unblock}'
 menu:
   docs:
     weight: 40
