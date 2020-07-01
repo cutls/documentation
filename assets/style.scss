@@ -146,11 +146,10 @@ body {
   }
 
   .sub-title {
-    display: block;
     padding: 10px;
     font-weight: 500;
-    text-transform: uppercase;
-  }
+    cursor: pointer;
+}
 
   & > ul a {
     display: block;

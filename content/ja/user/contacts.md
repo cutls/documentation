@@ -14,33 +14,33 @@ menu:
 招待リンクを作成して他の人とシェアしましょう。一部のサーバは登録するのに招待を必要とします。招待リンクを作成する差異には、使用回数に制限をかけたり、
 有効期限を設定できたりします。招待リンクはいつでも無効化できます。
 
-## Follows and followers {#relationships}
+## フォローとフォロワー {#relationships}
 
-{{< figure src="/assets/image%20%2849%29.png" caption="Mutuals who have not moved their account, sorted by last activity" >}}
+{{< figure src="/assets/image%20%2849%29.png" caption="最新活動順に並べられた、引っ越し等をしていない相互フォロワー" >}}
 
-Within settings, you can find a relationship manager that lets you filter and sort through the profiles that you are connected to, based on different criteria:
+設定内にフィルタリングや並べ替えが可能なフォロー/フォロワー関係マネージャがあります。異なる3種の基準で表示できます。
 
-* **Relationship:** whether a profile is following you, followed by you, or mutually following each other.
-* **Account status:** whether a profile is currently marked as redirected or not.
-* **Account activity:** whether a profile has posted in the past month or not.
+* **関係性:** アカウントがあなたをフォローしているかどうか、あなたがフォローしているかどうか、またはその両方(相互フォロワー)か
+* **状態:** リダイレクト設定(別のアカウントへの引っ越し)をしているかどうか
+* **活動:** 過去1か月に活動があるかどうか
 
-You can select certain users to unfollow, or to remove from your followers, by checking the boxes and clicking the corresponding button in the table header.
+フォローする/されている状態を解除したいユーザーを、ボックスをチェックして選択して、「選択したユーザーをフォロー解除」をクリックしてください。
 
-## Account settings {#account}
+## アカウント設定 {#account}
 
-From the account settings, you can change your email address, set a new password, revoke active sessions or authorized apps, and enable two-factor authentication.
+アカウント設定では、メールアドレスやパスワードの変更、セッションや認証済みのアプリケーションの解除、2要素認証などを設定できます。
 
 ## Identity proofs {#proofs}
 
-[Link verification](profile.md#link-verification) of profile metadata fields is one way to prove your identity by using rel=me links, but Mastodon also supports a more generalized proof provider subsystem. Currently, the only supported identity provider for this subsystem is Keybase.
+プロフィールのフィールドにrel="me"をつけたリンクを張ることで、[リンク先認証](profile.md#link-verification)を行うこともできます。また、Mastodonはより一般的な認証システムを提供しています。現在はKeybaseをアイデンティティプロバイダとして使用できます。
 
-### Keybase identity verification {#keybase}
+### Keybaseのアイデンティティ証明 {#keybase}
 
-{{< figure src="/assets/image%20%2860%29.png" caption="An identity proof on a profile" >}}
+{{< figure src="/assets/image%20%2860%29.png" caption="プロフィール上のアイデンティティ" >}}
 
-First, sign up for Keybase and generate or upload a GPG public key to your Keybase account. Next, go to "prove more identities". Find your instance if it is available, and if not, contact Keybase for help. Select your Mastodon domain and enter your username. You will be able to prove your identity by authorizing with your Mastodon account and posting a proof message. Once you do this, the identity proof will be established, and your profile will show Keybase as a proven identity.
+まずKeybaseに登録して、GPG公開鍵を作成するかアップロードしてください。次に、"prove more identities"をクリックし、リストの中にあなたのインスタンスがあるかどうかを確かめてください。ある場合はそれをクリックし、無い場合はKeybaseのヘルプデスクに連絡してください。選択したらそこにユーザー名を記入します。Mastodonアカウントで認証して、proof messageを投稿することで証明が完了します。一度認証されれば、プロフィールに証明されたアイデンティティとしてKeybaseプロフィールが表示されます。
 
 {{< hint style="danger" >}}
-**Keybase verification is irreversible.** Keybase uses an immutable signature chain for its identity proofs, so once you prove your identity on Keybase, you cannot remove it. You can only revoke your proof by signing a revocation message with your associated private key.
+**Keybase証明は非可逆的です。** Keybaseは不変のシグネチャチェーンでアイデンティティを証明しているため、一度Keybaseでアイデンティティを証明すると、それを取り消すことができません。証明を取り消すには、関連付けられた秘密鍵で取り消しメッセージに署名する必要があります。
 {{< /hint >}}
 
