@@ -3,3 +3,4 @@ static/.sass-cache
 resources/
 content/ja-old
 deploy.sh
+deploy.bat
